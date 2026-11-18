@@ -2,20 +2,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.unri.pbo.aplikasi;
+package com.unri.pbo.aplikasi.view;
 
 /**
  *
  * @author M S I
  */
-public class menuAwal extends javax.swing.JFrame {
+public class manajemenPelanggan_Supplier extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(menuAwal.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(manajemenPelanggan_Supplier.class.getName());
 
     /**
-     * Creates new form menuAwal
+     * Creates new form manajemenPelanggan_Supplier
      */
-    public menuAwal() {
+    public manajemenPelanggan_Supplier() {
         initComponents();
     }
 
@@ -66,7 +66,7 @@ public class menuAwal extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new menuAwal().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new manajemenPelanggan_Supplier().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
