@@ -258,7 +258,7 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jPanel3, jPanel4, jPanel5});
 
         jPanel1.add(jPanel2);
-        jPanel2.setBounds(287, 0, 710, 578);
+        jPanel2.setBounds(280, 0, 720, 578);
 
         getContentPane().add(jPanel1);
         jPanel1.setBounds(20, 20, 1000, 578);
