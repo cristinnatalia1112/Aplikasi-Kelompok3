@@ -9,8 +9,7 @@
     <dependency>
         <groupId>librari-pos</groupId>
         <artifactId>ProjectPOS</artifactId>
-        <version>1.0</version>
-        
+        <version>1.0</version>        
     </dependency>
     </dependencies>
     <properties>
