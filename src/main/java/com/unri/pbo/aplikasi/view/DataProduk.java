@@ -3,7 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.unri.pbo.aplikasi.view;
-
+import com.unri.pbo.Produk;
+import java.math.BigDecimal;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author M S I
@@ -17,8 +20,47 @@ public class DataProduk extends javax.swing.JFrame {
      */
     public DataProduk() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        tampilkanData("");
     }
 
+    private void tampilkanData(String keyword) {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+
+        int jumlah = 0;
+        for (Produk p : DataStore.listProduk) {
+            String kode = p.getIdProduk();
+            String nama = p.getNamaProduk();
+            String kategori = DataStore.mapKategori.getOrDefault(kode, "-");
+
+            if (keyword.isEmpty() || 
+                kode.toLowerCase().contains(keyword.toLowerCase()) || 
+                nama.toLowerCase().contains(keyword.toLowerCase())) {
+                
+                model.addRow(new Object[]{
+                    kode,
+                    nama,
+                    kategori,
+                    "Rp " + p.getHargaBeli(),
+                    "Rp " + p.getHargaJual(),
+                    p.getStok()
+                });
+                jumlah++;
+            }
+        }
+        //lblJumlahData.setText("Menampilkan " + jumlah + " data");
+    }
+
+    private void bersihkanForm() {
+        jTextField1.setText("");
+        jTextField2.setText("");
+        //jTextField3.setSelectedIndex(0);
+        jTextField4.setText("");
+        jTextField5.setText("");
+        jTextField6.setText("");
+        jTextField1.setEditable(true);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -84,6 +126,11 @@ public class DataProduk extends javax.swing.JFrame {
         });
 
         jButton2.setText("Data Produk");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Pelanggan & Supplier");
 
@@ -116,6 +163,12 @@ public class DataProduk extends javax.swing.JFrame {
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Kategori");
+
+        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField4ActionPerformed(evt);
+            }
+        });
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel9.setText("Harga Beli");
@@ -414,6 +467,8 @@ public class DataProduk extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        new Dashboard().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
@@ -422,6 +477,25 @@ public class DataProduk extends javax.swing.JFrame {
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // TODO add your handling code here:
+        try {
+    String kode = jTextField1.getText().trim();
+    String nama = jTextField2.getText().trim();
+    String kategori = jComboBox1.getSelectedItem().toString();
+    BigDecimal hargaBeli = new BigDecimal(jTextField4.getText().trim());
+    BigDecimal hargaJual = new BigDecimal(jTextField5.getText().trim());
+    int stok = Integer.parseInt(jTextField6.getText().trim());
+
+    Produk produkBaru = new Produk(kode, nama, hargaBeli, hargaJual, stok);
+    DataStore.tambahProduk(produkBaru, kategori);
+
+    tampilkanData("");
+    bersihkanForm();
+    JOptionPane.showMessageDialog(this, "Produk berhasil disimpan!");
+} catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, "Harga dan Stok harus berupa angka!", "Input Error", JOptionPane.WARNING_MESSAGE);
+} catch (IllegalArgumentException | IllegalStateException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(), "Validasi Gagal", JOptionPane.ERROR_MESSAGE);
+}
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
@@ -435,6 +509,14 @@ public class DataProduk extends javax.swing.JFrame {
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField4ActionPerformed
 
     /**
      * @param args the command line arguments
