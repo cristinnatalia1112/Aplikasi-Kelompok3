@@ -3,7 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.unri.pbo.aplikasi.view;
-
+import com.unri.pbo.Supplier;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author M S I
@@ -15,10 +20,70 @@ public class manajemenPelanggan_Supplier extends javax.swing.JFrame {
     /**
      * Creates new form manajemenPelanggan_Supplier
      */
-    public manajemenPelanggan_Supplier() {
-        initComponents();
+    private static final List<Supplier> daftarSupplier = new ArrayList<>();
+    private static int counterId = 1;
+    private DefaultTableModel model;
+public manajemenPelanggan_Supplier() {
+    initComponents();
+    model = (DefaultTableModel) tblSupplier.getModel();
+    tblSupplier.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    tblSupplier.getSelectionModel().addListSelectionListener(e -> {
+        if (!e.getValueIsAdjusting()) isiFormDariTabel();
+    });
+    setPreferredSize(new java.awt.Dimension(1000, 600));
+    pack();
+    setLocationRelativeTo(null);
+    muatTabel(daftarSupplier);
+    resetForm();
+}
+    private void muatTabel(List<Supplier> data) {
+        model.setRowCount(0);
+        for (Supplier s : data) {
+            model.addRow(new Object[]{s.getId(), s.getNama(), s.getNamaPerusahaan(), s.getNoTelepon(), s.getAlamat()});
+        }
     }
 
+    private void resetForm() {
+        txtId.setText(String.format("SUP%03d", counterId));
+        txtNama.setText("");
+        txtPerusahaan.setText("");
+        txtTelepon.setText("");
+        txtAlamat.setText("");
+        tblSupplier.clearSelection();
+    }
+
+    private boolean valid() {
+        if (txtNama.getText().isBlank() || txtPerusahaan.getText().isBlank()
+                || txtTelepon.getText().isBlank() || txtAlamat.getText().isBlank()) {
+            JOptionPane.showMessageDialog(this, "Semua kolom wajib diisi.");
+            return false;
+        }
+        if (!txtTelepon.getText().trim().matches("\\d{8,15}")) {
+            JOptionPane.showMessageDialog(this, "No. telepon harus angka 8-15 digit.");
+            return false;
+        }
+        return true;
+    }
+
+    private Supplier terpilih() {
+        int r = tblSupplier.getSelectedRow();
+        if (r < 0) return null;
+        String id = model.getValueAt(r, 0).toString();
+        for (Supplier s : daftarSupplier) {
+            if (s.getId().equals(id)) return s;
+        }
+        return null;
+    }
+
+    private void isiFormDariTabel() {
+        Supplier s = terpilih();
+        if (s == null) return;
+        txtId.setText(s.getId());
+        txtNama.setText(s.getNama());
+        txtPerusahaan.setText(s.getNamaPerusahaan());
+        txtTelepon.setText(s.getNoTelepon());
+        txtAlamat.setText(s.getAlamat());
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -28,22 +93,307 @@ public class manajemenPelanggan_Supplier extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        lblJudul = new javax.swing.JLabel();
+        lblSub = new javax.swing.JLabel();
+        pnlFormSupplier = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        lblNama = new javax.swing.JLabel();
+        lblPerusahaan = new javax.swing.JLabel();
+        lblTelepon = new javax.swing.JLabel();
+        lblAlamat = new javax.swing.JLabel();
+        txtId = new javax.swing.JTextField();
+        txtNama = new javax.swing.JTextField();
+        txtPerusahaan = new javax.swing.JTextField();
+        txtTelepon = new javax.swing.JTextField();
+        txtAlamat = new javax.swing.JTextField();
+        btnTambah = new javax.swing.JButton();
+        btnHapus = new javax.swing.JButton();
+        btnUbah = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
+        lblCari = new javax.swing.JLabel();
+        txtCari = new javax.swing.JTextField();
+        btnCari = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblSupplier = new javax.swing.JTable();
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1000, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 600, Short.MAX_VALUE)
-        );
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("POS TOKO BERKAT - Manajemen Supplier");
+        setResizable(false);
+        getContentPane().setLayout(null);
+
+        jPanel1.setBackground(new java.awt.Color(0, 0, 102));
+        jPanel1.setToolTipText("");
+        jPanel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel1.setLayout(null);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("POS TOKO BERKAT");
+        jLabel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel1.add(jLabel1);
+        jLabel1.setBounds(70, 30, 171, 25);
+
+        jButton1.setText("Dashboard");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1);
+        jButton1.setBounds(20, 90, 240, 40);
+
+        jButton2.setText("Data Produk");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton2);
+        jButton2.setBounds(20, 160, 240, 40);
+
+        jButton3.setText("Pelanggan & Supplier");
+        jPanel1.add(jButton3);
+        jButton3.setBounds(20, 230, 240, 40);
+
+        jButton4.setText("Kasir");
+        jPanel1.add(jButton4);
+        jButton4.setBounds(20, 300, 240, 40);
+
+        jButton5.setText("Restock");
+        jPanel1.add(jButton5);
+        jButton5.setBounds(20, 370, 240, 40);
+
+        jButton6.setText("Riwayat Transaksi");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton6);
+        jButton6.setBounds(20, 440, 240, 40);
+
+        jPanel2.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jPanel2.setInheritsPopupMenu(true);
+        jPanel2.setLayout(null);
+
+        lblJudul.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblJudul.setText("Manajemen Supplier");
+        jPanel2.add(lblJudul);
+        lblJudul.setBounds(24, 24, 200, 25);
+
+        lblSub.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
+        lblSub.setForeground(new java.awt.Color(102, 102, 102));
+        lblSub.setText("Kelola data supplier Toko Berkat");
+        jPanel2.add(lblSub);
+        lblSub.setBounds(24, 55, 166, 16);
+
+        pnlFormSupplier.setBackground(new java.awt.Color(255, 255, 255));
+        pnlFormSupplier.setLayout(null);
+
+        jLabel2.setText("ID Supplier");
+        pnlFormSupplier.add(jLabel2);
+        jLabel2.setBounds(15, 10, 190, 20);
+
+        lblNama.setText("Nama");
+        pnlFormSupplier.add(lblNama);
+        lblNama.setBounds(15, 66, 190, 20);
+
+        lblPerusahaan.setText("Nama Perusahaan");
+        pnlFormSupplier.add(lblPerusahaan);
+        lblPerusahaan.setBounds(225, 10, 190, 20);
+
+        lblTelepon.setText("No. Telepon");
+        pnlFormSupplier.add(lblTelepon);
+        lblTelepon.setBounds(225, 66, 190, 20);
+
+        lblAlamat.setText("Alamat");
+        pnlFormSupplier.add(lblAlamat);
+        lblAlamat.setBounds(435, 10, 190, 20);
+        pnlFormSupplier.add(txtId);
+        txtId.setBounds(15, 32, 190, 25);
+        pnlFormSupplier.add(txtNama);
+        txtNama.setBounds(15, 88, 190, 25);
+        pnlFormSupplier.add(txtPerusahaan);
+        txtPerusahaan.setBounds(225, 32, 190, 25);
+        txtPerusahaan.getAccessibleContext().setAccessibleName("");
+
+        pnlFormSupplier.add(txtTelepon);
+        txtTelepon.setBounds(225, 88, 190, 25);
+        pnlFormSupplier.add(txtAlamat);
+        txtAlamat.setBounds(435, 32, 190, 25);
+
+        btnTambah.setText("Tambah");
+        btnTambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTambahActionPerformed(evt);
+            }
+        });
+        pnlFormSupplier.add(btnTambah);
+        btnTambah.setBounds(435, 70, 95, 28);
+
+        btnHapus.setText("Hapus");
+        btnHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHapusActionPerformed(evt);
+            }
+        });
+        pnlFormSupplier.add(btnHapus);
+        btnHapus.setBounds(535, 70, 95, 28);
+
+        btnUbah.setText("Ubah");
+        btnUbah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUbahActionPerformed(evt);
+            }
+        });
+        pnlFormSupplier.add(btnUbah);
+        btnUbah.setBounds(435, 102, 95, 28);
+
+        btnReset.setText("Reset");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
+        pnlFormSupplier.add(btnReset);
+        btnReset.setBounds(535, 102, 95, 28);
+
+        jPanel2.add(pnlFormSupplier);
+        pnlFormSupplier.setBounds(24, 84, 645, 140);
+
+        lblCari.setText("Cari:");
+        jPanel2.add(lblCari);
+        lblCari.setBounds(24, 236, 40, 25);
+        jPanel2.add(txtCari);
+        txtCari.setBounds(65, 236, 250, 25);
+
+        btnCari.setText("Cari");
+        btnCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnCari);
+        btnCari.setBounds(325, 236, 95, 28);
+
+        tblSupplier.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Nama", "Perusahaan", "Telepon", "Alamat"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblSupplier.setEnabled(false);
+        jScrollPane1.setViewportView(tblSupplier);
+
+        jPanel2.add(jScrollPane1);
+        jScrollPane1.setBounds(24, 272, 645, 290);
+
+        jPanel1.add(jPanel2);
+        jPanel2.setBounds(280, 0, 720, 578);
+
+        getContentPane().add(jPanel1);
+        jPanel1.setBounds(20, 20, 1000, 578);
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+           dispose();
+    Dashboard d = new Dashboard();
+    d.setPreferredSize(new java.awt.Dimension(1000, 600));
+    d.pack();
+    d.setLocationRelativeTo(null);
+    d.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
+    if (!valid()) return;
+    daftarSupplier.add(new Supplier(txtId.getText(), txtNama.getText().trim(), txtAlamat.getText().trim(),
+            txtTelepon.getText().trim(), txtPerusahaan.getText().trim()));
+    counterId++;
+    muatTabel(daftarSupplier);
+    resetForm();
+    JOptionPane.showMessageDialog(this, "Supplier berhasil ditambahkan.");
+
+        
+    }//GEN-LAST:event_btnTambahActionPerformed
+
+    private void btnUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahActionPerformed
+    Supplier s = terpilih();
+if (s == null) {
+    JOptionPane.showMessageDialog(this, "Pilih supplier di tabel dulu.");
+    return;
+}
+if (!valid()) return;
+    s.setNama(txtNama.getText().trim());
+    s.setNamaPerusahaan(txtPerusahaan.getText().trim());
+    s.setNoTelepon(txtTelepon.getText().trim());
+    s.setAlamat(txtAlamat.getText().trim());
+    muatTabel(daftarSupplier);
+    resetForm();
+    JOptionPane.showMessageDialog(this, "Data supplier berhasil diubah.");
+    }//GEN-LAST:event_btnUbahActionPerformed
+
+    private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
+      Supplier s = terpilih();
+    if (s == null) {
+    JOptionPane.showMessageDialog(this, "Pilih supplier di tabel dulu.");
+    return;
+}
+    int ok = JOptionPane.showConfirmDialog(this, "Hapus supplier " + s.getNama() + "?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+    if (ok == JOptionPane.YES_OPTION) {
+    daftarSupplier.remove(s);
+    muatTabel(daftarSupplier);
+    resetForm();
+}
+    }//GEN-LAST:event_btnHapusActionPerformed
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        resetForm();
+        muatTabel(daftarSupplier);
+        txtCari.setText("");
+    }//GEN-LAST:event_btnResetActionPerformed
+
+    private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
+        String k = txtCari.getText().trim().toLowerCase();
+    List<Supplier> hasil = new ArrayList<>();
+    for (Supplier s : daftarSupplier) {
+    if (s.getId().toLowerCase().contains(k) || s.getNama().toLowerCase().contains(k)
+            || s.getNamaPerusahaan().toLowerCase().contains(k)) {
+        hasil.add(s);
+    }
+}
+muatTabel(hasil);
+    }//GEN-LAST:event_btnCariActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        JOptionPane.showMessageDialog(this, "Halaman Data Produk belum tersedia.");
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -71,5 +421,36 @@ public class manajemenPelanggan_Supplier extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCari;
+    private javax.swing.JButton btnHapus;
+    private javax.swing.JButton btnReset;
+    private javax.swing.JButton btnTambah;
+    private javax.swing.JButton btnUbah;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblAlamat;
+    private javax.swing.JLabel lblCari;
+    private javax.swing.JLabel lblJudul;
+    private javax.swing.JLabel lblNama;
+    private javax.swing.JLabel lblPerusahaan;
+    private javax.swing.JLabel lblSub;
+    private javax.swing.JLabel lblTelepon;
+    private javax.swing.JPanel pnlFormSupplier;
+    private javax.swing.JTable tblSupplier;
+    private javax.swing.JTextField txtAlamat;
+    private javax.swing.JTextField txtCari;
+    private javax.swing.JTextField txtId;
+    private javax.swing.JTextField txtNama;
+    private javax.swing.JTextField txtPerusahaan;
+    private javax.swing.JTextField txtTelepon;
     // End of variables declaration//GEN-END:variables
 }
