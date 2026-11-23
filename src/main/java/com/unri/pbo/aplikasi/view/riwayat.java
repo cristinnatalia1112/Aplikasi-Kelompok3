@@ -3,6 +3,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.unri.pbo.aplikasi.view;
+import java.awt.Color;
+import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+import javax.swing.BorderFactory;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -17,6 +29,10 @@ public class riwayat extends javax.swing.JFrame {
      */
     public riwayat() {
         initComponents();
+        siapkanRingkasan();
+        siapkanTabel();
+        siapkanFilter();
+        muatData();
     }
 
     /**
@@ -28,22 +44,319 @@ public class riwayat extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        txtCari = new javax.swing.JTextField();
+        cbJenis = new javax.swing.JComboBox<>();
+        btnReset = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tabel = new javax.swing.JTable();
+        lblRingkasan = new javax.swing.JLabel();
+
+        jLabel2.setText("jLabel2");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(0, 0, 102));
+        jPanel1.setToolTipText("");
+        jPanel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel1.setLayout(null);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("POS TOKO BERKAT");
+        jLabel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel1.add(jLabel1);
+        jLabel1.setBounds(70, 30, 171, 25);
+
+        jButton1.setText("Dashboard");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1);
+        jButton1.setBounds(20, 90, 240, 40);
+
+        jButton2.setText("Data Produk");
+        jPanel1.add(jButton2);
+        jButton2.setBounds(20, 160, 240, 40);
+
+        jButton3.setText("Pelanggan & Supplier");
+        jPanel1.add(jButton3);
+        jButton3.setBounds(20, 230, 240, 40);
+
+        jButton4.setText("Kasir");
+        jPanel1.add(jButton4);
+        jButton4.setBounds(20, 300, 240, 40);
+
+        jButton5.setText("Restock");
+        jPanel1.add(jButton5);
+        jButton5.setBounds(20, 370, 240, 40);
+
+        jButton6.setBackground(new java.awt.Color(30, 58, 138));
+        jButton6.setText("Riwayat Transaksi");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton6);
+        jButton6.setBounds(20, 440, 240, 40);
+
+        jPanel2.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jPanel2.setInheritsPopupMenu(true);
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel5.setText("Riwayat Transaksi");
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel6.setText("Daftar penjualan dan restock toko");
+
+        txtCari.setText("Cari transaksi....");
+        txtCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCariActionPerformed(evt);
+            }
+        });
+
+        cbJenis.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Semua", "Penjualan", "Pembelian" }));
+
+        btnReset.setText("Reset");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
+
+        tabel.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "No", "Tanggal", "Kode", "Jenis", "Keterangan", "Total"
+            }
+        ));
+        jScrollPane3.setViewportView(tabel);
+        if (tabel.getColumnModel().getColumnCount() > 0) {
+            tabel.getColumnModel().getColumn(5).setResizable(false);
+        }
+
+        jScrollPane4.setViewportView(jScrollPane3);
+
+        lblRingkasan.setText("jLabel3");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(lblRingkasan)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel5)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(txtCari, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(cbJenis, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jScrollPane4))
+                        .addGap(44, 44, 44))))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnReset, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                    .addComponent(cbJenis)
+                    .addComponent(txtCari))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addComponent(lblRingkasan)
+                .addGap(22, 22, 22))
+        );
+
+        jPanel1.add(jPanel2);
+        jPanel2.setBounds(280, 0, 720, 578);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1000, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 11, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 578, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 11, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void txtCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCariActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCariActionPerformed
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnResetActionPerformed
+private DefaultTableModel model;
+private TableRowSorter<DefaultTableModel> sorter;
+
+private void siapkanRingkasan() {
+    lblRingkasan.setOpaque(true);
+    lblRingkasan.setBackground(new Color(241, 241, 241));
+    lblRingkasan.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(180, 180, 180)),
+            BorderFactory.createEmptyBorder(6, 12, 6, 12)));
+    lblRingkasan.setFont(new Font("Segoe UI", Font.BOLD, 13));
+}
+
+private void siapkanTabel() {
+    model = new DefaultTableModel(
+            new Object[]{"No", "Tanggal", "Kode Transaksi", "Jenis", "Keterangan", "Total"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int col) {
+            return false;
+        }
+    };
+    tabel.setModel(model);
+    sorter = new TableRowSorter<>(model);
+    tabel.setRowSorter(sorter);
+
+    tabel.setRowHeight(24);
+    tabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+    tabel.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+
+    int[] lebar = {40, 95, 150, 90, 230, 87};
+    for (int i = 0; i < lebar.length; i++) {
+        tabel.getColumnModel().getColumn(i).setPreferredWidth(lebar[i]);
+    }
+    tabel.getColumnModel().getColumn(5).setCellRenderer(new RupiahRenderer());
+}
+
+private void siapkanFilter() {
+    txtCari.getDocument().addDocumentListener(new DocumentListener() {
+        @Override public void insertUpdate(DocumentEvent e) { terapkanFilter(); }
+        @Override public void removeUpdate(DocumentEvent e) { terapkanFilter(); }
+        @Override public void changedUpdate(DocumentEvent e) { terapkanFilter(); }
+    });
+    cbJenis.addActionListener(e -> terapkanFilter());
+    btnReset.addActionListener(e -> {
+        txtCari.setText("");
+        cbJenis.setSelectedIndex(0);
+    });
+}
+
+private void terapkanFilter() {
+    List<RowFilter<Object, Object>> filters = new ArrayList<>();
+
+    String cari = txtCari.getText().trim();
+    if (!cari.isEmpty()) {
+        filters.add(RowFilter.regexFilter("(?i)" + Pattern.quote(cari)));
+    }
+
+    String jenis = (String) cbJenis.getSelectedItem();
+    if (jenis != null && !"Semua".equals(jenis)) {
+        filters.add(RowFilter.regexFilter("^" + jenis + "$", 3));
+    }
+
+    sorter.setRowFilter(filters.isEmpty() ? null : RowFilter.andFilter(filters));
+    updateRingkasan();
+}
+
+private void updateRingkasan() {
+    long total = 0;
+    int jumlah = sorter.getViewRowCount();
+    for (int i = 0; i < jumlah; i++) {
+        int modelRow = sorter.convertRowIndexToModel(i);
+        total += (Long) model.getValueAt(modelRow, 5);
+    }
+    lblRingkasan.setText("  Menampilkan " + jumlah + " transaksi   |   Total nilai: " + rupiah(total));
+}
+
+public void tambahData(String tanggal, String kodeTrx, String jenis, String keterangan, long total) {
+    model.addRow(new Object[]{model.getRowCount() + 1, tanggal, kodeTrx, jenis, keterangan, total});
+    updateRingkasan();
+}
+
+private void muatData() {
+    // TODO: ganti dengan data dari database
+    tambahData("12/11/2026", "TRX-20261112-001", "Penjualan", "Indomie Goreng x2, Teh Botol x1", 25000L);
+    tambahData("13/11/2026", "RST-20261113-001", "Pembelian", "Restock Beras 5kg x20", 1000000L);
+    tambahData("15/11/2026", "TRX-20261115-002", "Penjualan", "Paracetamol x1, Pulpen x3", 21000L);
+    tambahData("17/11/2026", "RST-20261117-002", "Pembelian", "Restock Indomie Goreng x50", 875000L);
+    tambahData("19/11/2026", "TRX-20261119-003", "Penjualan", "Beras 5kg x1", 68000L);
+}
+
+static String rupiah(long nilai) {
+    return "Rp " + String.format("%,d", nilai).replace(',', '.');
+}
+
+private static class RupiahRenderer extends DefaultTableCellRenderer {
+    @Override
+    protected void setValue(Object value) {
+        setHorizontalAlignment(RIGHT);
+        setText(value instanceof Long ? rupiah((Long) value) : String.valueOf(value));
+    }
+}
     /**
      * @param args the command line arguments
      */
@@ -70,5 +383,25 @@ public class riwayat extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnReset;
+    private javax.swing.JComboBox<String> cbJenis;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JLabel lblRingkasan;
+    private javax.swing.JTable tabel;
+    private javax.swing.JTextField txtCari;
     // End of variables declaration//GEN-END:variables
 }

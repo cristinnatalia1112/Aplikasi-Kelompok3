@@ -3,6 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.unri.pbo.aplikasi.view;
+import java.awt.Font;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -17,6 +24,10 @@ public class transaksiPembelian extends javax.swing.JFrame {
      */
     public transaksiPembelian() {
         initComponents();
+        siapkanCombo();
+        siapkanTabel();
+        siapkanTombol();
+        updateTotal();
     }
 
     /**
@@ -28,25 +39,443 @@ public class transaksiPembelian extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        cbProduk = new javax.swing.JComboBox<>();
+        btnTambah = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        cbSupplier = new javax.swing.JComboBox<>();
+        btnBersih = new javax.swing.JButton();
+        txtJumlah = new javax.swing.JTextField();
+        txtHargaBeli = new javax.swing.JTextField();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabel = new javax.swing.JTable();
+        btnHapus = new javax.swing.JButton();
+        btnSimpan = new javax.swing.JButton();
+        lblTotal = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(0, 0, 102));
+        jPanel1.setToolTipText("");
+        jPanel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel1.setLayout(null);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("POS TOKO BERKAT");
+        jLabel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel1.add(jLabel1);
+        jLabel1.setBounds(70, 30, 171, 25);
+
+        jButton1.setText("Dashboard");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1);
+        jButton1.setBounds(20, 90, 240, 40);
+
+        jButton2.setText("Data Produk");
+        jPanel1.add(jButton2);
+        jButton2.setBounds(20, 160, 240, 40);
+
+        jButton3.setText("Pelanggan & Supplier");
+        jPanel1.add(jButton3);
+        jButton3.setBounds(20, 230, 240, 40);
+
+        jButton4.setText("Kasir");
+        jPanel1.add(jButton4);
+        jButton4.setBounds(20, 300, 240, 40);
+
+        jButton5.setBackground(new java.awt.Color(30, 58, 138));
+        jButton5.setText("Restock");
+        jPanel1.add(jButton5);
+        jButton5.setBounds(20, 370, 240, 40);
+
+        jButton6.setText("Riwayat Transaksi");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton6);
+        jButton6.setBounds(20, 440, 240, 40);
+
+        jPanel2.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jPanel2.setInheritsPopupMenu(true);
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel5.setText("Restock Barang");
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 2, 12)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel6.setText("Catat pembelian barang dari supplier untuk menambah stok");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel2.setText("Input Restock");
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        jLabel3.setText("Produk");
+
+        cbProduk.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "P001 - Indomie Goreng", "P002 - Teh Botol Sosro", "P003 - Beras 5kg", "P004 - Pulpen Snowman", "P005 - Paracetamol" }));
+
+        btnTambah.setBackground(new java.awt.Color(0, 0, 102));
+        btnTambah.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnTambah.setForeground(new java.awt.Color(255, 255, 255));
+        btnTambah.setText("Tambah ke daftar");
+
+        jLabel7.setText("Supplier");
+
+        jLabel8.setText("Jumlah Beli");
+
+        jLabel9.setText("Harga beli (per item)");
+
+        cbSupplier.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PT Indofood", "CV Sumber Makmur", "UD Sejahtera" }));
+
+        btnBersih.setBackground(new java.awt.Color(51, 65, 85));
+        btnBersih.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnBersih.setForeground(new java.awt.Color(255, 255, 255));
+        btnBersih.setText("Bersihkan form");
+
+        txtJumlah.setMinimumSize(new java.awt.Dimension(72, 22));
+
+        txtHargaBeli.setMinimumSize(new java.awt.Dimension(72, 22));
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(txtJumlah, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel3)
+                        .addComponent(jLabel2)
+                        .addComponent(jLabel7)
+                        .addComponent(jLabel8)
+                        .addComponent(jLabel9)
+                        .addComponent(cbProduk, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(cbSupplier, 0, 205, Short.MAX_VALUE)
+                        .addComponent(txtHargaBeli, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnBersih, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnTambah, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cbProduk, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cbSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtJumlah, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtHargaBeli, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnTambah, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnBersih, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
+        );
+
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel10.setText("Daftar barang restock");
+
+        tabel.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Kode", "Nama Produk", "Supplier", "Jumlah", "Harga beli", "Subtotal"
+            }
+        ));
+        jScrollPane1.setViewportView(tabel);
+
+        btnHapus.setBackground(new java.awt.Color(51, 65, 85));
+        btnHapus.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnHapus.setForeground(new java.awt.Color(255, 255, 255));
+        btnHapus.setText("Hapus item terpilih");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnHapus, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel10)))
+                .addContainerGap(14, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnHapus, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        btnSimpan.setBackground(new java.awt.Color(0, 0, 102));
+        btnSimpan.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnSimpan.setForeground(new java.awt.Color(255, 255, 255));
+        btnSimpan.setText("Simpan Restock");
+
+        lblTotal.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        lblTotal.setText("jLabel4");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel5)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(216, 216, 216)
+                        .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(15, Short.MAX_VALUE))
+        );
+
+        jPanel1.add(jPanel2);
+        jPanel2.setBounds(280, 0, 720, 578);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 1000, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1000, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 600, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 578, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private DefaultTableModel model;
+
+private void siapkanCombo() {
+    cbProduk.setModel(new DefaultComboBoxModel<>(new String[]{
+        "P001 - Indomie Goreng", "P002 - Teh Botol Sosro", "P003 - Beras 5kg",
+        "P004 - Pulpen Snowman", "P005 - Paracetamol"}));
+    cbSupplier.setModel(new DefaultComboBoxModel<>(new String[]{
+        "PT Indofood", "CV Sumber Makmur", "UD Sejahtera"}));
+}
+
+private void siapkanTabel() {
+    model = new DefaultTableModel(
+            new Object[]{"Kode", "Nama Produk", "Supplier", "Jumlah", "Harga Beli", "Subtotal"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int col) {
+            return false;
+        }
+    };
+    tabel.setModel(model);
+    tabel.setRowHeight(24);
+    tabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+    tabel.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+    tabel.getColumnModel().getColumn(4).setCellRenderer(new RupiahRenderer());
+    tabel.getColumnModel().getColumn(5).setCellRenderer(new RupiahRenderer());
+}
+
+private void siapkanTombol() {
+    btnTambah.addActionListener(e -> tambahItem());
+    btnBersih.addActionListener(e -> bersihkanForm());
+    btnHapus.addActionListener(e -> hapusItem());
+    btnSimpan.addActionListener(e -> simpanRestock());
+}
+
+private void tambahItem() {
+    String pilihan = (String) cbProduk.getSelectedItem();
+    int pemisah = pilihan.indexOf(" - ");
+    String kode = pilihan.substring(0, pemisah);
+    String nama = pilihan.substring(pemisah + 3);
+    String supplier = (String) cbSupplier.getSelectedItem();
+
+    int jumlah;
+    long hargaBeli;
+    try {
+        jumlah = Integer.parseInt(txtJumlah.getText().trim());
+        hargaBeli = Long.parseLong(txtHargaBeli.getText().trim());
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Jumlah dan harga beli harus berupa angka.",
+                "Input Tidak Valid", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    if (jumlah <= 0 || hargaBeli <= 0) {
+        JOptionPane.showMessageDialog(this, "Jumlah dan harga beli harus lebih dari 0.",
+                "Input Tidak Valid", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    for (int i = 0; i < model.getRowCount(); i++) {
+        if (kode.equals(model.getValueAt(i, 0))) {
+            JOptionPane.showMessageDialog(this, "Produk " + kode + " sudah ada di daftar.",
+                    "Duplikat", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+    }
+
+    model.addRow(new Object[]{kode, nama, supplier, jumlah, hargaBeli, jumlah * hargaBeli});
+    updateTotal();
+    bersihkanForm();
+}
+
+private void hapusItem() {
+    int baris = tabel.getSelectedRow();
+    if (baris == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih item yang ingin dihapus.",
+                "Peringatan", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    model.removeRow(baris);
+    updateTotal();
+}
+
+private void simpanRestock() {
+    if (model.getRowCount() == 0) {
+        JOptionPane.showMessageDialog(this, "Daftar restock masih kosong.",
+                "Peringatan", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int konfirmasi = JOptionPane.showConfirmDialog(this,
+            "Simpan restock ini dan tambahkan stok produk?",
+            "Konfirmasi", JOptionPane.YES_NO_OPTION);
+    if (konfirmasi != JOptionPane.YES_OPTION) {
+        return;
+    }
+
+    String kodeTrx = "RST-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+
+    // TODO: simpan ke database (header restock, detail, dan update stok)
+
+    JOptionPane.showMessageDialog(this,
+            "Restock berhasil disimpan.\nKode: " + kodeTrx + "\nTotal: " + rupiah(hitungTotal()),
+            "Berhasil", JOptionPane.INFORMATION_MESSAGE);
+
+    model.setRowCount(0);
+    updateTotal();
+    bersihkanForm();
+}
+
+private void bersihkanForm() {
+    cbProduk.setSelectedIndex(0);
+    cbSupplier.setSelectedIndex(0);
+    txtJumlah.setText("");
+    txtHargaBeli.setText("");
+}
+
+private long hitungTotal() {
+    long total = 0;
+    for (int i = 0; i < model.getRowCount(); i++) {
+        total += (Long) model.getValueAt(i, 5);
+    }
+    return total;
+}
+
+private void updateTotal() {
+    lblTotal.setText("Total restock: " + rupiah(hitungTotal()));
+}
+
+static String rupiah(long nilai) {
+    return "Rp " + String.format("%,d", nilai).replace(',', '.');
+}
+
+private static class RupiahRenderer extends DefaultTableCellRenderer {
+    @Override
+    protected void setValue(Object value) {
+        setHorizontalAlignment(RIGHT);
+        setText(value instanceof Long ? rupiah((Long) value) : String.valueOf(value));
+    }
+}
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -70,5 +499,35 @@ public class transaksiPembelian extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBersih;
+    private javax.swing.JButton btnHapus;
+    private javax.swing.JButton btnSimpan;
+    private javax.swing.JButton btnTambah;
+    private javax.swing.JComboBox<String> cbProduk;
+    private javax.swing.JComboBox<String> cbSupplier;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblTotal;
+    private javax.swing.JTable tabel;
+    private javax.swing.JTextField txtHargaBeli;
+    private javax.swing.JTextField txtJumlah;
     // End of variables declaration//GEN-END:variables
 }
