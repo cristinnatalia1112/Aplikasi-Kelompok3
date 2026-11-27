@@ -183,6 +183,11 @@ public manajemenPelanggan_Supplier() {
         jButton4.setBounds(20, 300, 240, 40);
 
         jButton5.setText("Restock");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton5);
         jButton5.setBounds(20, 370, 240, 40);
 
@@ -342,7 +347,8 @@ public manajemenPelanggan_Supplier() {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        new riwayat().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
@@ -406,13 +412,19 @@ muatTabel(hasil);
     }//GEN-LAST:event_btnCariActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        JOptionPane.showMessageDialog(this, "Halaman Data Produk belum tersedia.");
+        new DataProduk().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         dispose();
         new transaksiPenjualan().setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        new transaksiPembelian().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton5ActionPerformed
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
         dispose();
         new manajemenPelanggan_Supplier().setVisible(true);

@@ -29,25 +29,20 @@ public class DataProduk extends javax.swing.JFrame {
         model.setRowCount(0);
 
         int jumlah = 0;
-        for (Produk p : DataStore.listProduk) {
+        for (Produk p : DataStore.getProduk(keyword)) {
             String kode = p.getIdProduk();
             String nama = p.getNamaProduk();
             String kategori = DataStore.mapKategori.getOrDefault(kode, "-");
 
-            if (keyword.isEmpty() || 
-                kode.toLowerCase().contains(keyword.toLowerCase()) || 
-                nama.toLowerCase().contains(keyword.toLowerCase())) {
-                
-                model.addRow(new Object[]{
-                    kode,
-                    nama,
-                    kategori,
-                    "Rp " + p.getHargaBeli(),
-                    "Rp " + p.getHargaJual(),
-                    p.getStok()
-                });
-                jumlah++;
-            }
+            model.addRow(new Object[]{
+                kode,
+                nama,
+                kategori,
+                "Rp " + p.getHargaBeli(),
+                "Rp " + p.getHargaJual(),
+                p.getStok()
+            });
+            jumlah++;
         }
         //lblJumlahData.setText("Menampilkan " + jumlah + " data");
     }
@@ -134,10 +129,25 @@ public class DataProduk extends javax.swing.JFrame {
         });
 
         jButton3.setText("Pelanggan & Supplier");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Kasir");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("Restock");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton6.setText("Riwayat Transaksi");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
@@ -306,6 +316,11 @@ public class DataProduk extends javax.swing.JFrame {
                 jTextField3ActionPerformed(evt);
             }
         });
+        jTextField3.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField3KeyReleased(evt);
+            }
+        });
 
         jTable1.setFont(new java.awt.Font("Segoe UI", 0, 8)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -321,6 +336,11 @@ public class DataProduk extends javax.swing.JFrame {
             }
         ));
         jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -463,7 +483,8 @@ public class DataProduk extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        new riwayat().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -500,11 +521,48 @@ public class DataProduk extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
+    try {
+            String kode = jTextField1.getText().trim();
+            if (kode.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Pilih produk dari tabel terlebih dahulu!");
+                return;
+            }
+            String nama = jTextField2.getText().trim();
+            String kategori = jComboBox1.getSelectedItem().toString();
+            BigDecimal hargaBeli = new BigDecimal(jTextField4.getText().trim());
+            BigDecimal hargaJual = new BigDecimal(jTextField5.getText().trim());
+            int stok = Integer.parseInt(jTextField6.getText().trim());
+
+            Produk produkEdit = new Produk(kode, nama, hargaBeli, hargaJual, stok);
+            DataStore.editProduk(produkEdit, kategori);
+
+            tampilkanData("");
+            bersihkanForm();
+            JOptionPane.showMessageDialog(this, "Data produk berhasil diperbarui!");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Harga dan Stok harus berupa angka!", "Input Error", JOptionPane.WARNING_MESSAGE);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Validasi Gagal", JOptionPane.ERROR_MESSAGE);
+        }        // TODO add your handling code here:
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        // TODO add your handling code here:
+       String kode = jTextField1.getText().trim();
+        if (kode.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Pilih produk yang akan dihapus dari tabel!");
+            return;
+        }
+
+        int konfirmasi = JOptionPane.showConfirmDialog(this,
+                "Yakin ingin menghapus produk dengan kode " + kode + "?",
+                "Konfirmasi Hapus", JOptionPane.YES_NO_OPTION);
+
+        if (konfirmasi == JOptionPane.YES_OPTION) {
+            DataStore.hapusProduk(kode);
+            tampilkanData("");
+            bersihkanForm();
+            JOptionPane.showMessageDialog(this, "Produk berhasil dihapus!");
+        }
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
@@ -518,6 +576,43 @@ public class DataProduk extends javax.swing.JFrame {
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField4ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        int baris = jTable1.getSelectedRow();
+        if (baris != -1) {
+            jTextField1.setText(jTable1.getValueAt(baris, 0).toString());
+            jTextField2.setText(jTable1.getValueAt(baris, 1).toString());
+            jComboBox1.setSelectedItem(jTable1.getValueAt(baris, 2).toString());
+            jTextField4.setText(jTable1.getValueAt(baris, 3).toString().replace("Rp ", "").trim());
+            jTextField5.setText(jTable1.getValueAt(baris, 4).toString().replace("Rp ", "").trim());
+            jTextField6.setText(jTable1.getValueAt(baris, 5).toString());
+
+            jTextField1.setEditable(false);
+        }
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jTextField3KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField3KeyReleased
+       String keyword = jTextField3.getText().trim();
+        if (keyword.equals("Cari Produk...")) {
+            keyword = "";
+        }
+        tampilkanData(keyword);
+    }//GEN-LAST:event_jTextField3KeyReleased
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        new manajemenPelanggan_Supplier().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        new transaksiPenjualan().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        new transaksiPembelian().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
