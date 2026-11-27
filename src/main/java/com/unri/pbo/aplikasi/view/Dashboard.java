@@ -20,10 +20,6 @@ public class Dashboard extends javax.swing.JFrame {
         setPreferredSize(new java.awt.Dimension(1050, 620));
         pack();
         setLocationRelativeTo(null);
-    // ... sisa kodinganmu di bawahnya biarkan saja
-
-        jButton5.addActionListener(e -> new transaksiPembelian().setVisible(true));
-        jButton6.addActionListener(e -> new riwayat().setVisible(true));
     }
 
     /**

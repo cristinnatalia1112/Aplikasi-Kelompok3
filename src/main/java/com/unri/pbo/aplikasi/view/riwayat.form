@@ -259,9 +259,6 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtCari">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Cari transaksi...."/>
-              </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtCariActionPerformed"/>
               </Events>
