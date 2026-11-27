@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 /**
@@ -31,25 +32,180 @@ public class transaksiPenjualan extends javax.swing.JFrame {
      */
     
 private static final String PENGGUNA = "Kasir";
-private static int counterPenjualan = 1;
-private static final List<Produk> daftarProduk = new ArrayList<>();
-private static final List<Pelanggan> daftarPelanggan = new ArrayList<>();
 private Penjualan penjualan;
 private DefaultTableModel model;
 private final NumberFormat rupiah = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID"));
+private final List<Pelanggan> daftarPelanggan = new ArrayList<>();
+private final List<Produk> daftarProduk = new ArrayList<>();
 
-static {
-    daftarProduk.add(new Produk("P001", "Beras 5 Kg", new BigDecimal("60000"), new BigDecimal("68000"), 50));
-    daftarProduk.add(new Produk("P002", "Minyak Goreng 1 L", new BigDecimal("14000"), new BigDecimal("17000"), 40));
-    daftarProduk.add(new Produk("P003", "Gula Pasir 1 Kg", new BigDecimal("13000"), new BigDecimal("16000"), 30));
-    daftarProduk.add(new Produk("P004", "Mie Instan", new BigDecimal("2800"), new BigDecimal("3500"), 100));
-    daftarPelanggan.add(new Pelanggan("PLG000", "Umum", "-", "-", "Umum"));
+private void loadPelangganFromDB() {
+    daftarPelanggan.clear();
+    String sql = "SELECT kode_pelanggan, nama, telepon, alamat FROM pelanggan ORDER BY kode_pelanggan ASC";
+    try (Connection conn = Koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            String kode = rs.getString("kode_pelanggan");
+            String nama = rs.getString("nama");
+            String telp = rs.getString("telepon") != null ? rs.getString("telepon") : "-";
+            String alamat = rs.getString("alamat") != null ? rs.getString("alamat") : "-";
+            daftarPelanggan.add(new Pelanggan(kode, nama, telp, alamat, "Pelanggan"));
+        }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Gagal memuat pelanggan: " + ex.getMessage());
+    }
+
+    if (daftarPelanggan.isEmpty()) {
+        daftarPelanggan.add(new Pelanggan("C001", "Umum", "-", "-", "Umum"));
+    }
 }
+
+private void loadProdukFromDB() {
+    daftarProduk.clear();
+    String sql = "SELECT kode_produk, nama_produk, harga_beli, harga_jual, stok FROM produk ORDER BY kode_produk ASC";
+    try (Connection conn = Koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            daftarProduk.add(new Produk(
+                rs.getString("kode_produk"),
+                rs.getString("nama_produk"),
+                BigDecimal.valueOf(rs.getLong("harga_beli")),
+                BigDecimal.valueOf(rs.getLong("harga_jual")),
+                rs.getInt("stok")
+            ));
+        }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Gagal memuat produk: " + ex.getMessage());
+    }
+}
+private void simpanTransaksiKeDB(String kodePenjualan) throws SQLException {
+    String sqlCariPelanggan = "SELECT kode_pelanggan FROM pelanggan WHERE nama = ? LIMIT 1";
+    String sqlCariProduk = "SELECT kode_produk FROM produk WHERE nama_produk = ? LIMIT 1";
+    String sqlPenjualan = "INSERT INTO penjualan (kode_penjualan, tanggal, kode_pelanggan, total) VALUES (?, NOW(), ?, ?)";
+    String sqlDetail = "INSERT INTO detail_penjualan (kode_penjualan, kode_produk, jumlah, harga_jual, subtotal) VALUES (?, ?, ?, ?, ?)";
+    String sqlStok = "UPDATE produk SET stok = stok - ? WHERE kode_produk = ? AND stok >= ?";
+    String sqlTransaksi = "INSERT INTO transaksi (kode, tanggal, jenis, keterangan, total) VALUES (?, CURDATE(), 'Penjualan', ?, ?)";
+
+    Pelanggan pelangganDipilih = daftarPelanggan.get(cbPelanggan.getSelectedIndex());
+    long totalBayar = penjualan.hitungTotal().longValue();
+
+    Connection conn = null;
+    try {
+        conn = Koneksi.getConnection();
+        conn.setAutoCommit(false);
+
+        String kodePelanggan = "C001";
+        try (PreparedStatement psPlg = conn.prepareStatement(sqlCariPelanggan)) {
+            psPlg.setString(1, pelangganDipilih.getNama());
+            try (ResultSet rsPlg = psPlg.executeQuery()) {
+                if (rsPlg.next()) {
+                    kodePelanggan = rsPlg.getString("kode_pelanggan");
+                }
+            }
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement(sqlPenjualan)) {
+            ps.setString(1, kodePenjualan);
+            ps.setString(2, kodePelanggan);
+            ps.setLong(3, totalBayar);
+            ps.executeUpdate();
+        }
+
+        StringBuilder keterangan = new StringBuilder();
+
+        for (Object o : penjualan.getDaftarDetail()) {
+            DetailPenjualan d = (DetailPenjualan) o;
+            String namaProduk = d.getProduk().getNamaProduk();
+            int jumlah = d.getJumlah();
+            long hargaJual = d.getHargaJual().longValue();
+            long subtotal = d.getSubtotal().longValue();
+
+            String kodeProduk;
+            try (PreparedStatement psPrd = conn.prepareStatement(sqlCariProduk)) {
+                psPrd.setString(1, namaProduk);
+                try (ResultSet rsPrd = psPrd.executeQuery()) {
+                    if (!rsPrd.next()) {
+                        throw new SQLException("Produk tidak ditemukan di SQL: " + namaProduk);
+                    }
+                    kodeProduk = rsPrd.getString("kode_produk");
+                }
+            }
+
+            try (PreparedStatement psDet = conn.prepareStatement(sqlDetail)) {
+                psDet.setString(1, kodePenjualan);
+                psDet.setString(2, kodeProduk);
+                psDet.setInt(3, jumlah);
+                psDet.setLong(4, hargaJual);
+                psDet.setLong(5, subtotal);
+                psDet.executeUpdate();
+            }
+
+            try (PreparedStatement psUpd = conn.prepareStatement(sqlStok)) {
+                psUpd.setInt(1, jumlah);
+                psUpd.setString(2, kodeProduk);
+                psUpd.setInt(3, jumlah);
+                int affected = psUpd.executeUpdate();
+                if (affected == 0) {
+                    throw new SQLException("Stok tidak cukup di database untuk: " + namaProduk);
+                }
+            }
+
+            if (keterangan.length() > 0) keterangan.append(", ");
+            keterangan.append(namaProduk).append(" x").append(jumlah);
+        }
+
+        try (PreparedStatement psTrx = conn.prepareStatement(sqlTransaksi)) {
+            psTrx.setString(1, kodePenjualan);
+            psTrx.setString(2, keterangan.toString());
+            psTrx.setLong(3, totalBayar);
+            psTrx.executeUpdate();
+        }
+
+        conn.commit();
+    } catch (SQLException ex) {
+        if (conn != null) {
+            try { conn.rollback(); } catch (SQLException ignored) {}
+        }
+        throw ex;
+    } finally {
+        if (conn != null) {
+            try {
+                conn.setAutoCommit(true);
+                conn.close();
+            } catch (SQLException ignored) {}
+        }
+    }
+}
+private String generateIdPenjualanFromDB() {
+    String sql = "SELECT kode_penjualan FROM penjualan ORDER BY kode_penjualan DESC LIMIT 1";
+    try (Connection conn = Koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        int next = 1;
+        if (rs.next()) {
+            String terakhir = rs.getString("kode_penjualan");
+            String angka = terakhir.replaceAll("[^0-9]", "");
+            if (!angka.isEmpty()) {
+                next = Integer.parseInt(angka) + 1;
+            }
+        }
+        return String.format("PJ%04d", next);
+    } catch (SQLException ex) {
+        return "PJ0001";
+    }
+}
+
 public transaksiPenjualan() {
     initComponents();
     rupiah.setMaximumFractionDigits(0);
     model = (DefaultTableModel) tblkeranjang.getModel();
     tblkeranjang.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    loadPelangganFromDB();
+    loadProdukFromDB();
     isiPelanggan();
     isiProduk();
     transaksiBaru();
@@ -82,7 +238,7 @@ private void isiProduk() {
 }
 
 private void transaksiBaru() {
-    String id = String.format("PJ%04d", counterPenjualan);
+    String id = generateIdPenjualanFromDB();
     penjualan = new Penjualan(id, daftarPelanggan.get(cbPelanggan.getSelectedIndex()));
     lblId.setText(id);
     refreshTabel();
@@ -134,7 +290,7 @@ private void refreshTabel() {
         lblTotalTitle = new javax.swing.JLabel();
         lbltotal = new javax.swing.JLabel();
         btnBayar = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
+        btnBatalkan = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("POS TOKO BERKAT - Transaksi Penjualan");
@@ -232,6 +388,11 @@ private void refreshTabel() {
         panelAtas.add(lblPelangganTitle);
         lblPelangganTitle.setBounds(225, 10, 190, 20);
 
+        cbPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbPelangganActionPerformed(evt);
+            }
+        });
         panelAtas.add(cbPelanggan);
         cbPelanggan.setBounds(225, 32, 190, 25);
 
@@ -340,14 +501,14 @@ private void refreshTabel() {
         jPanel2.add(btnBayar);
         btnBayar.setBounds(399, 500, 170, 40);
 
-        jButton7.setText("Batalkan");
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
+        btnBatalkan.setText("Batalkan");
+        btnBatalkan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
+                btnBatalkanActionPerformed(evt);
             }
         });
-        jPanel2.add(jButton7);
-        jButton7.setBounds(579, 500, 90, 40);
+        jPanel2.add(btnBatalkan);
+        btnBatalkan.setBounds(579, 500, 90, 40);
 
         jPanel1.add(jPanel2);
         jPanel2.setBounds(280, 0, 720, 578);
@@ -380,7 +541,6 @@ private void refreshTabel() {
     private void btnTambahItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahItemActionPerformed
        try {
         int idx = cbProduk.getSelectedIndex();
-        System.out.println("idx=" + idx + ", jumlah=" + spjumlah.getValue());
         if (idx < 0) {
             JOptionPane.showMessageDialog(this, "Pilih produk dulu.");
             return;
@@ -392,9 +552,8 @@ private void refreshTabel() {
             return;
         }
         penjualan.tambahPenjualan(p, jumlah, PENGGUNA, "Tambah item");
-        System.out.println("detail di penjualan: " + penjualan.getDaftarDetail().size());
         refreshTabel();
-        System.out.println("baris tabel: " + model.getRowCount() + ", kolom tabel: " + model.getColumnCount());
+        isiProduk();
     } catch (Exception ex) {
         ex.printStackTrace();
         JOptionPane.showMessageDialog(this, "Error: " + ex, "Gagal", JOptionPane.ERROR_MESSAGE);
@@ -408,96 +567,105 @@ private void refreshTabel() {
 
     private void btnUbahJumlahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahJumlahActionPerformed
        int r = tblkeranjang.getSelectedRow();
-if (r < 0) {
-    JOptionPane.showMessageDialog(this, "Pilih item di tabel dulu.");
-    return;
-}
-String id = model.getValueAt(r, 0).toString();
-String in = JOptionPane.showInputDialog(this, "Jumlah baru (total, bukan tambahan):");
-if (in == null) return;
-try {
-    int baru = Integer.parseInt(in.trim());
-    if (baru <= 0) throw new NumberFormatException();
-    DetailPenjualan target = null;
-    for (Object o : penjualan.getDaftarDetail()) {
-        DetailPenjualan d = (DetailPenjualan) o;
-        if (d.getIdDetailPenjualan().equals(id)) target = d;
-    }
-    if (target == null) {
-        JOptionPane.showMessageDialog(this, "Item tidak ditemukan.");
+    if (r < 0) {
+        JOptionPane.showMessageDialog(this, "Pilih item di tabel dulu.");
         return;
     }
-    int tersedia = target.getProduk().getStok() + target.getJumlah();
-    if (baru > tersedia) {
-        JOptionPane.showMessageDialog(this, "Stok tidak cukup. Maksimal: " + tersedia);
-        return;
+    String id = model.getValueAt(r, 0).toString();
+    String in = JOptionPane.showInputDialog(this, "Jumlah baru (total, bukan tambahan):");
+    if (in == null) return;
+    try {
+        int baru = Integer.parseInt(in.trim());
+        if (baru <= 0) throw new NumberFormatException();
+        DetailPenjualan target = null;
+        for (Object o : penjualan.getDaftarDetail()) {
+            DetailPenjualan d = (DetailPenjualan) o;
+            if (d.getIdDetailPenjualan().equals(id)) target = d;
+        }
+        if (target == null) {
+            JOptionPane.showMessageDialog(this, "Item tidak ditemukan.");
+            return;
+        }
+        int tersedia = target.getProduk().getStok() + target.getJumlah();
+        if (baru > tersedia) {
+            JOptionPane.showMessageDialog(this, "Stok tidak cukup. Maksimal: " + tersedia);
+            return;
+        }
+        penjualan.ubahDetail(id, baru, PENGGUNA, "Ubah jumlah");
+        refreshTabel();
+        isiProduk();
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Masukkan angka bulat lebih dari 0.");
+    } catch (RuntimeException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
     }
-    penjualan.ubahDetail(id, baru, PENGGUNA, "Ubah jumlah");
-    refreshTabel();
-    isiProduk();
-} catch (NumberFormatException ex) {
-    JOptionPane.showMessageDialog(this, "Masukkan angka bulat lebih dari 0.");
-} catch (RuntimeException ex) {
-    JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
-}
     }//GEN-LAST:event_btnUbahJumlahActionPerformed
 
     private void btnHapusItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusItemActionPerformed
        int r = tblkeranjang.getSelectedRow();
     if (r < 0) {
-    JOptionPane.showMessageDialog(this, "Pilih item di tabel dulu.");
-    return;
-}
+        JOptionPane.showMessageDialog(this, "Pilih item di tabel dulu.");
+        return;
+    }
     String id = model.getValueAt(r, 0).toString();
     try {
-    penjualan.hapusDetail(id, PENGGUNA, "Hapus item");
-    refreshTabel();
-    isiProduk();
-} catch (RuntimeException ex) {
-    JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
-}
+        penjualan.hapusDetail(id, PENGGUNA, "Hapus item");
+        refreshTabel();
+        isiProduk();
+    } catch (RuntimeException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnHapusItemActionPerformed
 
     private void btnBayarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBayarActionPerformed
-        if (penjualan.getDaftarDetail().isEmpty()) {
-    JOptionPane.showMessageDialog(this, "Keranjang masih kosong.");
-    return;
-}
-try {
-    penjualan.finalisasiTransaksi(PENGGUNA);
-    penjualan.cetakNota();
-    JOptionPane.showMessageDialog(this, "Transaksi " + lblId.getText() + " selesai.\nTotal: "
-            + rupiah.format(penjualan.hitungTotal()));
-    counterPenjualan++;
-    transaksiBaru();
-    isiProduk();
-} catch (RuntimeException ex) {
-    JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
+
+    if (penjualan.getDaftarDetail().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Keranjang masih kosong.");
+        return;
+    }
+    try {
+        String kodePenjualan = lblId.getText().trim();
+        penjualan.finalisasiTransaksi(PENGGUNA);
+        simpanTransaksiKeDB(kodePenjualan);
+        penjualan.cetakNota();
+        JOptionPane.showMessageDialog(this, "Transaksi " + kodePenjualan + " selesai.\nTotal: "
+                + rupiah.format(penjualan.hitungTotal()));
+        loadProdukFromDB();
+        isiProduk();
+        transaksiBaru();
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Gagal simpan ke SQL: " + ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
+    } catch (RuntimeException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
+    
 }
     }//GEN-LAST:event_btnBayarActionPerformed
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-       if (penjualan.getDaftarDetail().isEmpty()) {
-    JOptionPane.showMessageDialog(this, "Keranjang masih kosong, tidak ada yang dibatalkan.");
-    return;
-}
+    private void btnBatalkanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalkanActionPerformed
+      if (penjualan.getDaftarDetail().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Keranjang masih kosong, tidak ada yang dibatalkan.");
+        return;
+    }
     int ok = JOptionPane.showConfirmDialog(this, "Batalkan transaksi ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
     if (ok != JOptionPane.YES_OPTION) return;
     try {
-    penjualan.batalkanTransaksi(PENGGUNA, "Dibatalkan kasir");
-}   catch (RuntimeException ex) {
-    JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
-    return;
-}
-counterPenjualan++;
-transaksiBaru();
-isiProduk();
-    }//GEN-LAST:event_jButton7ActionPerformed
+        penjualan.batalkanTransaksi(PENGGUNA, "Dibatalkan kasir");
+    } catch (RuntimeException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    transaksiBaru();
+    isiProduk();
+    }//GEN-LAST:event_btnBatalkanActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
        dispose();
         new transaksiPembelian().setVisible(true);
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void cbPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPelangganActionPerformed
+
+    }//GEN-LAST:event_cbPelangganActionPerformed
 
     /**
      * @param args the command line arguments
@@ -525,6 +693,7 @@ isiProduk();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBatalkan;
     private javax.swing.JButton btnBayar;
     private javax.swing.JButton btnHapusItem;
     private javax.swing.JButton btnTambahItem;
@@ -537,7 +706,6 @@ isiProduk();
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
