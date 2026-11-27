@@ -15,6 +15,11 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -29,6 +34,7 @@ public class riwayat extends javax.swing.JFrame {
      */
     public riwayat() {
         initComponents();
+        pasangMenu();
         siapkanRingkasan();
         siapkanTabel();
         siapkanFilter();
@@ -138,7 +144,6 @@ public class riwayat extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(102, 102, 102));
         jLabel6.setText("Daftar penjualan dan restock toko");
 
-        txtCari.setText("Cari transaksi....");
         txtCari.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtCariActionPerformed(evt);
@@ -338,12 +343,30 @@ public void tambahData(String tanggal, String kodeTrx, String jenis, String kete
 }
 
 private void muatData() {
-    // TODO: ganti dengan data dari database
-    tambahData("12/11/2026", "TRX-20261112-001", "Penjualan", "Indomie Goreng x2, Teh Botol x1", 25000L);
-    tambahData("13/11/2026", "RST-20261113-001", "Pembelian", "Restock Beras 5kg x20", 1000000L);
-    tambahData("15/11/2026", "TRX-20261115-002", "Penjualan", "Paracetamol x1, Pulpen x3", 21000L);
-    tambahData("17/11/2026", "RST-20261117-002", "Pembelian", "Restock Indomie Goreng x50", 875000L);
-    tambahData("19/11/2026", "TRX-20261119-003", "Penjualan", "Beras 5kg x1", 68000L);
+    model.setRowCount(0);
+    String sql = "SELECT DATE_FORMAT(tanggal, '%d/%m/%Y') AS tgl, kode, jenis, keterangan, total FROM ("
+               + "  SELECT tanggal, kode, jenis, keterangan, total FROM transaksi"
+               + "  UNION ALL"
+               + "  SELECT r.tanggal, r.kode_restock, 'Pembelian',"
+               + "         GROUP_CONCAT(CONCAT('Restock ', p.nama_produk, ' x', d.jumlah) SEPARATOR ', '),"
+               + "         r.total"
+               + "  FROM restock r"
+               + "  JOIN detail_restock d ON d.kode_restock = r.kode_restock"
+               + "  JOIN produk p ON p.kode_produk = d.kode_produk"
+               + "  GROUP BY r.kode_restock, r.tanggal, r.total"
+               + ") AS riwayat ORDER BY tanggal";
+
+    try (Connection conn = Koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            tambahData(rs.getString("tgl"), rs.getString("kode"), rs.getString("jenis"),
+                    rs.getString("keterangan"), rs.getLong("total"));
+        }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Gagal memuat data: " + ex.getMessage(),
+                "Error Database", JOptionPane.ERROR_MESSAGE);
+    }
 }
 
 static String rupiah(long nilai) {
@@ -356,6 +379,17 @@ private static class RupiahRenderer extends DefaultTableCellRenderer {
         setHorizontalAlignment(RIGHT);
         setText(value instanceof Long ? rupiah((Long) value) : String.valueOf(value));
     }
+}
+private void pasangMenu() {
+    jButton1.addActionListener(e -> bukaHalaman(new Dashboard()));
+    jButton2.addActionListener(e -> bukaHalaman(new DataProduk()));
+    jButton3.addActionListener(e -> bukaHalaman(new manajemenPelanggan_Supplier()));
+    jButton5.addActionListener(e -> bukaHalaman(new transaksiPembelian()));
+}
+
+private void bukaHalaman(javax.swing.JFrame halaman) {
+    halaman.setVisible(true);
+    dispose();
 }
     /**
      * @param args the command line arguments
