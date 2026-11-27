@@ -160,7 +160,13 @@ public manajemenPelanggan_Supplier() {
         jPanel1.add(jButton2);
         jButton2.setBounds(20, 160, 240, 40);
 
+        jButton3.setBackground(new java.awt.Color(30, 58, 138));
         jButton3.setText("Pelanggan & Supplier");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton3);
         jButton3.setBounds(20, 230, 240, 40);
 
@@ -195,7 +201,7 @@ public manajemenPelanggan_Supplier() {
         lblSub.setForeground(new java.awt.Color(102, 102, 102));
         lblSub.setText("Kelola data supplier Toko Berkat");
         jPanel2.add(lblSub);
-        lblSub.setBounds(24, 55, 166, 16);
+        lblSub.setBounds(24, 55, 171, 16);
 
         pnlFormSupplier.setBackground(new java.awt.Color(255, 255, 255));
         pnlFormSupplier.setLayout(null);
@@ -394,6 +400,10 @@ muatTabel(hasil);
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         JOptionPane.showMessageDialog(this, "Halaman Data Produk belum tersedia.");
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments

@@ -17,6 +17,11 @@ public class Dashboard extends javax.swing.JFrame {
      */
     public Dashboard() {
         initComponents();
+        setPreferredSize(new java.awt.Dimension(1050, 620));
+        pack();
+        setLocationRelativeTo(null);
+    // ... sisa kodinganmu di bawahnya biarkan saja
+
         jButton5.addActionListener(e -> new transaksiPembelian().setVisible(true));
         jButton6.addActionListener(e -> new riwayat().setVisible(true));
     }
@@ -68,6 +73,7 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel1.add(jLabel1);
         jLabel1.setBounds(70, 30, 171, 25);
 
+        jButton1.setBackground(new java.awt.Color(30, 58, 138));
         jButton1.setText("Dashboard");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -129,7 +135,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addGap(0, 133, Short.MAX_VALUE))
+                        .addGap(0, 136, Short.MAX_VALUE))
                     .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -159,7 +165,7 @@ public class Dashboard extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel4)
-                .addContainerGap(141, Short.MAX_VALUE))
+                .addContainerGap(146, Short.MAX_VALUE))
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())

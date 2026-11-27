@@ -125,6 +125,7 @@ public class DataProduk extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setBackground(new java.awt.Color(30, 58, 138));
         jButton2.setText("Data Produk");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
