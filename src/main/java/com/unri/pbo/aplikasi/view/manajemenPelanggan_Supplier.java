@@ -171,6 +171,11 @@ public manajemenPelanggan_Supplier() {
         jButton3.setBounds(20, 230, 240, 40);
 
         jButton4.setText("Kasir");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton4);
         jButton4.setBounds(20, 300, 240, 40);
 
@@ -401,10 +406,14 @@ muatTabel(hasil);
         JOptionPane.showMessageDialog(this, "Halaman Data Produk belum tersedia.");
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        dispose();
+        new transaksiPenjualan().setVisible(true);
+    }//GEN-LAST:event_jButton4ActionPerformed
+        private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
+        dispose();
+        new manajemenPelanggan_Supplier().setVisible(true);
+    }
     /**
      * @param args the command line arguments
      */
