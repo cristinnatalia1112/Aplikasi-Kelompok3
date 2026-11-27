@@ -26,15 +26,8 @@ public class DataStore {
     // Menyimpan kategori berdasarkan kode produk
     public static HashMap<String, String> mapKategori = new HashMap<>();
 
-    // Data awal contoh (otomatis terisi saat pertama kali dijalankan)
-    static {
-        try {
-            tambahProduk(new Produk("BRG001", "Laptop", new BigDecimal("4000000"), new BigDecimal("5000000"), 10), "Elektronik");
-            tambahProduk(new Produk("BRG002", "Mouse", new BigDecimal("50000"), new BigDecimal("100000"), 20), "Aksesoris");
-        } catch (Exception e) {
-            System.out.println("Error init data: " + e.getMessage());
-        }
-    }
+    
+    
 
     public static void tambahProduk(Produk p, String kategori) {
         String sql = "INSERT INTO produk (kode_produk, nama_produk, kategori, harga_beli, harga_jual, stok) VALUES (?, ?, ?, ?, ?, ?)";
@@ -118,4 +111,51 @@ public class DataStore {
         return hasil;
     
     }
+        // ================= METHOD UNTUK DASHBOARD =================
+
+    public static int getTotalProduk() {
+        String sql = "SELECT COUNT(*) FROM produk";
+        try (Connection conn = Koneksi.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getTotalProduk: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public static int getPenjualanHariIni() {
+        String sql = "SELECT COUNT(*) FROM penjualan WHERE DATE(tanggal) = CURDATE()";
+        try (Connection conn = Koneksi.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getPenjualanHariIni: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public static int getStokMenipis(int batasMinimum) {
+        String sql = "SELECT COUNT(*) FROM produk WHERE stok <= ?";
+        try (Connection conn = Koneksi.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, batasMinimum);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getStokMenipis: " + e.getMessage());
+        }
+        return 0;
+    }
+    
+    
 }

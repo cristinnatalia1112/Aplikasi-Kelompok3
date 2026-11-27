@@ -547,22 +547,28 @@ public class DataProduk extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-       String kode = jTextField1.getText().trim();
-        if (kode.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Pilih produk yang akan dihapus dari tabel!");
-            return;
-        }
+                                         
+    int baris = jTable1.getSelectedRow();
+    if (baris == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Pilih produk yang ingin dihapus pada tabel terlebih dahulu!");
+        return;
+    }
 
-        int konfirmasi = JOptionPane.showConfirmDialog(this,
-                "Yakin ingin menghapus produk dengan kode " + kode + "?",
-                "Konfirmasi Hapus", JOptionPane.YES_NO_OPTION);
+    String kode = jTable1.getValueAt(baris, 0).toString();
+    String nama = jTable1.getValueAt(baris, 1).toString();
 
-        if (konfirmasi == JOptionPane.YES_OPTION) {
-            DataStore.hapusProduk(kode);
-            tampilkanData("");
-            bersihkanForm();
-            JOptionPane.showMessageDialog(this, "Produk berhasil dihapus!");
-        }
+    int konfirmasi = javax.swing.JOptionPane.showConfirmDialog(
+        this,
+        "Yakin ingin menghapus produk \"" + nama + "\" (" + kode + ")?",
+        "Konfirmasi Hapus",
+        javax.swing.JOptionPane.YES_NO_OPTION
+    );
+
+    if (konfirmasi == javax.swing.JOptionPane.YES_OPTION) {
+        DataStore.hapusProduk(kode);
+        tampilkanData("");
+    }
+
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed

@@ -4,7 +4,7 @@
 
 package com.unri.pbo.aplikasi;
 
-import com.unri.pbo.aplikasi.view.Dashboard;
+import com.unri.pbo.aplikasi.view.Login;
 
 /**
  *
@@ -13,7 +13,7 @@ import com.unri.pbo.aplikasi.view.Dashboard;
 public class Aplikasi {
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(() -> {
-            new Dashboard().setVisible(true);
+            new Login().setVisible(true);
         });
     }
 }
