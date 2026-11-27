@@ -410,7 +410,7 @@ muatTabel(hasil);
         dispose();
         new transaksiPenjualan().setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
-        private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
         dispose();
         new manajemenPelanggan_Supplier().setVisible(true);
     }

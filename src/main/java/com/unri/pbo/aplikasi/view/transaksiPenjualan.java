@@ -172,6 +172,7 @@ private void refreshTabel() {
         jPanel1.add(jButton3);
         jButton3.setBounds(20, 230, 240, 40);
 
+        jButton4.setBackground(new java.awt.Color(30, 58, 138));
         jButton4.setText("Kasir");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

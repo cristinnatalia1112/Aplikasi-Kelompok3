@@ -75,6 +75,7 @@ public class Dashboard extends javax.swing.JFrame {
 
         jButton1.setBackground(new java.awt.Color(30, 58, 138));
         jButton1.setText("Dashboard");
+        jButton1.setFocusPainted(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -102,10 +103,20 @@ public class Dashboard extends javax.swing.JFrame {
         jButton3.setBounds(20, 230, 240, 40);
 
         jButton4.setText("Kasir");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton4);
         jButton4.setBounds(20, 300, 240, 40);
 
         jButton5.setText("Restock");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton5);
         jButton5.setBounds(20, 370, 240, 40);
 
@@ -285,7 +296,8 @@ public class Dashboard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+     dispose();
+        new riwayat().setVisible(true);
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -293,13 +305,23 @@ public class Dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-    dispose();
     new manajemenPelanggan_Supplier().setVisible(true);
+    dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    new transaksiPenjualan().setVisible(true);
+    dispose();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+      dispose();
+        new transaksiPembelian().setVisible(true);
+    }//GEN-LAST:event_jButton5ActionPerformed
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
-            new DataProduk().setVisible(true);
-            this.dispose();
-        }
+        dispose();
+        new DataProduk().setVisible(true);
+    }
     /**
      * @param args the command line arguments
      */
