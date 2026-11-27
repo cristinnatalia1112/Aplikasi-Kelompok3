@@ -186,6 +186,11 @@ private void refreshTabel() {
         jButton4.setBounds(20, 300, 240, 40);
 
         jButton5.setText("Restock");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton5);
         jButton5.setBounds(20, 370, 240, 40);
 
@@ -368,7 +373,8 @@ private void refreshTabel() {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        dispose();
+        new riwayat().setVisible(true);
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void btnTambahItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahItemActionPerformed
@@ -487,6 +493,11 @@ counterPenjualan++;
 transaksiBaru();
 isiProduk();
     }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+       dispose();
+        new transaksiPembelian().setVisible(true);
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments

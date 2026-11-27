@@ -28,6 +28,7 @@ public class manajemenPelanggan_Supplier extends javax.swing.JFrame {
     private DefaultTableModel model;
 public manajemenPelanggan_Supplier() {
     initComponents();
+    setPreferredSize(new java.awt.Dimension(1050, 620));
     model = (DefaultTableModel) tblSupplier.getModel();
     tblSupplier.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tblSupplier.getSelectionModel().addListSelectionListener(e -> {
