@@ -17,11 +17,16 @@ public class Login extends javax.swing.JFrame {
      */
    public Login() {
     initComponents();
-    setPreferredSize(new java.awt.Dimension(800, 450));
+    setPreferredSize(new java.awt.Dimension(816, 470));
     pack();
     setLocationRelativeTo(null);
 }
+   private static final String USERNAME = "admin";
+private static final String PASSWORD = "admin123";
 
+private boolean cekLogin(String username, String password) {
+    return username.equals(USERNAME) && password.equals(PASSWORD);
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -41,9 +46,9 @@ public class Login extends javax.swing.JFrame {
         lblUsername = new javax.swing.JLabel();
         txtUsername = new javax.swing.JTextField();
         lblPassword = new javax.swing.JLabel();
-        txtPassword = new javax.swing.JTextField();
         chkTampil = new javax.swing.JCheckBox();
         btnLogin = new javax.swing.JButton();
+        txtPassword = new javax.swing.JPasswordField();
         lblPesan = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -96,11 +101,10 @@ public class Login extends javax.swing.JFrame {
         lblPassword.setText("Password");
         pnlForm.add(lblPassword);
         lblPassword.setBounds(20, 77, 340, 22);
-        pnlForm.add(txtPassword);
-        txtPassword.setBounds(20, 99, 340, 28);
 
         chkTampil.setBackground(new java.awt.Color(255, 255, 255));
         chkTampil.setText("Tampilkan password");
+        chkTampil.addActionListener(this::chkTampilActionPerformed);
         pnlForm.add(chkTampil);
         chkTampil.setBounds(20, 133, 200, 22);
 
@@ -111,6 +115,8 @@ public class Login extends javax.swing.JFrame {
         btnLogin.addActionListener(this::btnLoginActionPerformed);
         pnlForm.add(btnLogin);
         btnLogin.setBounds(20, 160, 340, 32);
+        pnlForm.add(txtPassword);
+        txtPassword.setBounds(20, 99, 340, 28);
 
         pnlKanan.add(pnlForm);
         pnlForm.setBounds(60, 140, 380, 200);
@@ -126,8 +132,25 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        // TODO add your handling code here:
+       String user = txtUsername.getText().trim();
+    String pass = new String(txtPassword.getPassword());
+    if (user.isEmpty() || pass.isEmpty()) {
+    lblPesan.setText("Username dan password wajib diisi.");
+    return;
+}
+    if (cekLogin(user, pass)) {
+    dispose();
+    new Dashboard().setVisible(true);
+}   else {
+    lblPesan.setText("Username atau password salah.");
+    txtPassword.setText("");
+    txtPassword.requestFocus();
+}
     }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void chkTampilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkTampilActionPerformed
+      txtPassword.setEchoChar(chkTampil.isSelected() ? (char) 0 : '\u2022');
+    }//GEN-LAST:event_chkTampilActionPerformed
 
     /**
      * @param args the command line arguments
@@ -167,7 +190,7 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JPanel pnlForm;
     private javax.swing.JPanel pnlKanan;
     private javax.swing.JPanel pnlkiri;
-    private javax.swing.JTextField txtPassword;
+    private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
 }
