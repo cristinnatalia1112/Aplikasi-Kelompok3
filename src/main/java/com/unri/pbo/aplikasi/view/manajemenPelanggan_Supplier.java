@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 /**
@@ -26,10 +27,12 @@ public class manajemenPelanggan_Supplier extends javax.swing.JFrame {
     private static final List<Supplier> daftarSupplier = new ArrayList<>();
     private static int counterId = 1;
     private DefaultTableModel model;
-public manajemenPelanggan_Supplier() {
+
+    public manajemenPelanggan_Supplier() {
     initComponents();
     setPreferredSize(new java.awt.Dimension(1050, 620));
     model = (DefaultTableModel) tblSupplier.getModel();
+    tblSupplier.setEnabled(true);
     tblSupplier.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tblSupplier.getSelectionModel().addListSelectionListener(e -> {
         if (!e.getValueIsAdjusting()) isiFormDariTabel();
@@ -37,8 +40,83 @@ public manajemenPelanggan_Supplier() {
     setPreferredSize(new java.awt.Dimension(1000, 600));
     pack();
     setLocationRelativeTo(null);
+    loadSupplierFromDB();
     muatTabel(daftarSupplier);
     resetForm();
+}
+
+
+private void loadSupplierFromDB() {
+    daftarSupplier.clear();
+
+    String sql = "SELECT kode_supplier, nama, nama_perusahaan, telepon, alamat "
+               + "FROM supplier ORDER BY kode_supplier ASC";
+
+    try (Connection conn = Koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+
+            String kode = rs.getString("kode_supplier");
+            String nama = rs.getString("nama");
+
+            // Lewati data jika ID atau nama kosong
+            if (kode == null || kode.isBlank()
+                    || nama == null || nama.isBlank()) {
+                continue;
+            }
+
+            String perusahaan = rs.getString("nama_perusahaan");
+            String telp = rs.getString("telepon");
+            String alamat = rs.getString("alamat");
+
+            if (perusahaan == null || perusahaan.isBlank()) {
+                perusahaan = "-";
+            }
+
+            if (telp == null || telp.isBlank()) {
+                telp = "-";
+            }
+
+            if (alamat == null || alamat.isBlank()) {
+                alamat = "-";
+            }
+
+            daftarSupplier.add(
+                new Supplier(kode, nama, alamat, telp, perusahaan)
+            );
+        }
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(
+            this,
+            "Gagal memuat supplier: " + ex.getMessage()
+        );
+    }
+
+}
+
+
+private String generateIdSupplierFromDB() {
+    String sql = "SELECT kode_supplier FROM supplier ORDER BY kode_supplier DESC LIMIT 1";
+    try (Connection conn = Koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        int next = 1;
+        if (rs.next()) {
+            String terakhir = rs.getString("kode_supplier");
+            String angka = terakhir.replaceAll("[^0-9]", "");
+            if (!angka.isEmpty()) {
+                next = Integer.parseInt(angka) + 1;
+            }
+        }
+        return String.format("SUP%03d", next);
+    } catch (SQLException ex) {
+        return String.format("SUP%03d", counterId);
+    }
+
 }
     private void muatTabel(List<Supplier> data) {
         model.setRowCount(0);
@@ -48,13 +126,13 @@ public manajemenPelanggan_Supplier() {
     }
 
     private void resetForm() {
-        txtId.setText(String.format("SUP%03d", counterId));
-        txtNama.setText("");
-        txtPerusahaan.setText("");
-        txtTelepon.setText("");
-        txtAlamat.setText("");
-        tblSupplier.clearSelection();
-    }
+    txtId.setText(generateIdSupplierFromDB());
+    txtNama.setText("");
+    txtPerusahaan.setText("");
+    txtTelepon.setText("");
+    txtAlamat.setText("");
+    tblSupplier.clearSelection();
+}
 
     private boolean valid() {
         if (txtNama.getText().isBlank() || txtPerusahaan.getText().isBlank()
@@ -137,6 +215,7 @@ public manajemenPelanggan_Supplier() {
         jPanel1.setBackground(new java.awt.Color(0, 0, 102));
         jPanel1.setToolTipText("");
         jPanel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel1.setPreferredSize(new java.awt.Dimension(1000, 600));
         jPanel1.setLayout(null);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -215,7 +294,7 @@ public manajemenPelanggan_Supplier() {
         lblSub.setForeground(new java.awt.Color(102, 102, 102));
         lblSub.setText("Kelola data supplier Toko Berkat");
         jPanel2.add(lblSub);
-        lblSub.setBounds(24, 55, 171, 16);
+        lblSub.setBounds(24, 55, 166, 16);
 
         pnlFormSupplier.setBackground(new java.awt.Color(255, 255, 255));
         pnlFormSupplier.setLayout(null);
@@ -354,62 +433,114 @@ public manajemenPelanggan_Supplier() {
 
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
     if (!valid()) return;
-    daftarSupplier.add(new Supplier(txtId.getText(), txtNama.getText().trim(), txtAlamat.getText().trim(),
-            txtTelepon.getText().trim(), txtPerusahaan.getText().trim()));
-    counterId++;
-    muatTabel(daftarSupplier);
-    resetForm();
-    JOptionPane.showMessageDialog(this, "Supplier berhasil ditambahkan.");
 
-        
+    String sql = "INSERT INTO supplier "
+               + "(kode_supplier, nama, nama_perusahaan, telepon, alamat) "
+               + "VALUES (?, ?, ?, ?, ?)";
+
+    try (Connection conn = Koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, txtId.getText().trim());
+        ps.setString(2, txtNama.getText().trim());
+        ps.setString(3, txtPerusahaan.getText().trim());
+        ps.setString(4, txtTelepon.getText().trim());
+        ps.setString(5, txtAlamat.getText().trim());
+
+        ps.executeUpdate();
+
+        loadSupplierFromDB();
+        muatTabel(daftarSupplier);
+        resetForm();
+
+        JOptionPane.showMessageDialog(
+            this, "Supplier berhasil disimpan ke database!"
+        );
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(
+            this,
+            "Gagal menyimpan supplier: " + ex.getMessage()
+        );
+    }
     }//GEN-LAST:event_btnTambahActionPerformed
 
     private void btnUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahActionPerformed
     Supplier s = terpilih();
-if (s == null) {
-    JOptionPane.showMessageDialog(this, "Pilih supplier di tabel dulu.");
-    return;
-}
-if (!valid()) return;
-    s.setNama(txtNama.getText().trim());
-    s.setNamaPerusahaan(txtPerusahaan.getText().trim());
-    s.setNoTelepon(txtTelepon.getText().trim());
-    s.setAlamat(txtAlamat.getText().trim());
-    muatTabel(daftarSupplier);
-    resetForm();
-    JOptionPane.showMessageDialog(this, "Data supplier berhasil diubah.");
+    if (s == null) {
+        JOptionPane.showMessageDialog(this, "Pilih supplier di tabel dulu.");
+        return;
+    }
+    if (!valid()) return;
+
+    String nama = txtNama.getText().trim();
+    String perusahaan = txtPerusahaan.getText().trim();
+    String telepon = txtTelepon.getText().trim();
+    String alamat = txtAlamat.getText().trim();
+    String kode = s.getId();
+
+    String sql = "UPDATE supplier SET nama = ?, nama_perusahaan = ?, telepon = ?, alamat = ? WHERE kode_supplier = ?";
+    try (Connection conn = Koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, nama);
+        ps.setString(2, perusahaan);
+        ps.setString(3, telepon);
+        ps.setString(4, alamat);
+        ps.setString(5, kode);
+        ps.executeUpdate();
+
+        loadSupplierFromDB();
+        muatTabel(daftarSupplier);
+        resetForm();
+        JOptionPane.showMessageDialog(this, "Data supplier berhasil diubah.");
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Gagal mengubah supplier di DB: " + ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnUbahActionPerformed
 
     private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
       Supplier s = terpilih();
     if (s == null) {
-    JOptionPane.showMessageDialog(this, "Pilih supplier di tabel dulu.");
-    return;
-}
+        JOptionPane.showMessageDialog(this, "Pilih supplier di tabel dulu.");
+        return;
+    }
     int ok = JOptionPane.showConfirmDialog(this, "Hapus supplier " + s.getNama() + "?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
     if (ok == JOptionPane.YES_OPTION) {
-    daftarSupplier.remove(s);
-    muatTabel(daftarSupplier);
-    resetForm();
-}
+        String sql = "DELETE FROM supplier WHERE kode_supplier = ?";
+        try (Connection conn = Koneksi.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, s.getId());
+            ps.executeUpdate();
+
+            loadSupplierFromDB();
+            muatTabel(daftarSupplier);
+            resetForm();
+            JOptionPane.showMessageDialog(this, "Supplier berhasil dihapus.");
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Gagal menghapus supplier di DB: " + ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     }//GEN-LAST:event_btnHapusActionPerformed
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
-        resetForm();
-        muatTabel(daftarSupplier);
-        txtCari.setText("");
+     loadSupplierFromDB();
+    resetForm();
+    muatTabel(daftarSupplier);
+    txtCari.setText("");
     }//GEN-LAST:event_btnResetActionPerformed
 
     private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
         String k = txtCari.getText().trim().toLowerCase();
     List<Supplier> hasil = new ArrayList<>();
     for (Supplier s : daftarSupplier) {
-    if (s.getId().toLowerCase().contains(k) || s.getNama().toLowerCase().contains(k)
-            || s.getNamaPerusahaan().toLowerCase().contains(k)) {
-        hasil.add(s);
+        if (s.getId().toLowerCase().contains(k) || s.getNama().toLowerCase().contains(k)
+                || s.getNamaPerusahaan().toLowerCase().contains(k)) {
+            hasil.add(s);
+        }
     }
-}
-muatTabel(hasil);
+    muatTabel(hasil);
     }//GEN-LAST:event_btnCariActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
