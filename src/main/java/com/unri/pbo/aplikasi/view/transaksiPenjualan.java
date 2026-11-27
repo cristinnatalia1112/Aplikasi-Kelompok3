@@ -619,26 +619,72 @@ private void refreshTabel() {
 
     private void btnBayarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBayarActionPerformed
 
-    if (penjualan.getDaftarDetail().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Keranjang masih kosong.");
-        return;
-    }
-    try {
-        String kodePenjualan = lblId.getText().trim();
-        penjualan.finalisasiTransaksi(PENGGUNA);
-        simpanTransaksiKeDB(kodePenjualan);
-        penjualan.cetakNota();
-        JOptionPane.showMessageDialog(this, "Transaksi " + kodePenjualan + " selesai.\nTotal: "
-                + rupiah.format(penjualan.hitungTotal()));
-        loadProdukFromDB();
-        isiProduk();
-        transaksiBaru();
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Gagal simpan ke SQL: " + ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
-    } catch (RuntimeException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
-    
-}
+          if (penjualan.getDaftarDetail().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Keranjang masih kosong.");
+            return;
+        }
+
+        long totalBayar = penjualan.hitungTotal().longValue();
+        String inputBayar = JOptionPane.showInputDialog(
+                this,
+                "Total Belanja: " + rupiah.format(totalBayar) + "\nMasukkan uang bayar:",
+                "Pembayaran",
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (inputBayar == null) {
+            return; // Kasir menekan Cancel
+        }
+
+        String bersih = inputBayar.replaceAll("[^0-9]", "");
+        if (bersih.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nominal uang bayar tidak valid.");
+            return;
+        }
+
+        long uangBayar;
+        try {
+            uangBayar = Long.parseLong(bersih);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Nominal uang bayar terlalu besar atau tidak valid.");
+            return;
+        }
+
+        if (uangBayar < totalBayar) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Uang bayar kurang!\nTotal: " + rupiah.format(totalBayar)
+                            + "\nKurang: " + rupiah.format(totalBayar - uangBayar),
+                    "Pembayaran Kurang",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        long kembalian = uangBayar - totalBayar;
+
+        try {
+            String kodePenjualan = lblId.getText().trim();
+            penjualan.finalisasiTransaksi(PENGGUNA);
+            simpanTransaksiKeDB(kodePenjualan);
+            penjualan.cetakNota();
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Transaksi " + kodePenjualan + " selesai.\n"
+                            + "Total     : " + rupiah.format(totalBayar) + "\n"
+                            + "Bayar     : " + rupiah.format(uangBayar) + "\n"
+                            + "Kembalian : " + rupiah.format(kembalian),
+                    "Struk / Ringkasan Pembayaran",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            loadProdukFromDB();
+            isiProduk();
+            transaksiBaru();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Gagal simpan ke SQL: " + ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Gagal", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnBayarActionPerformed
 
     private void btnBatalkanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalkanActionPerformed
