@@ -15,6 +15,9 @@ import java.util.Locale;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 /**
  *
  * @author M S I
@@ -172,6 +175,7 @@ private void refreshTabel() {
         jPanel1.add(jButton3);
         jButton3.setBounds(20, 230, 240, 40);
 
+        jButton4.setBackground(new java.awt.Color(30, 58, 138));
         jButton4.setText("Kasir");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

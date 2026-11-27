@@ -10,6 +10,11 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+
 
 /**
  *
@@ -347,6 +352,83 @@ private void siapkanCombo() {
     cbSupplier.setModel(new DefaultComboBoxModel<>(new String[]{
         "PT Indofood", "CV Sumber Makmur", "UD Sejahtera"}));
 }
+private void simpanRestock() {
+    if (model.getRowCount() == 0) {
+        JOptionPane.showMessageDialog(this, "Daftar restock masih kosong.",
+                "Peringatan", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int konfirmasi = JOptionPane.showConfirmDialog(this,
+            "Simpan restock ini dan tambahkan stok produk?",
+            "Konfirmasi", JOptionPane.YES_NO_OPTION);
+    if (konfirmasi != JOptionPane.YES_OPTION) {
+        return;
+    }
+
+    String kodeTrx = "RST-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+
+    try {
+        simpanKeDatabase(kodeTrx);
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Gagal menyimpan: " + ex.getMessage(),
+                "Error Database", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    JOptionPane.showMessageDialog(this,
+            "Restock berhasil disimpan.\nKode: " + kodeTrx + "\nTotal: " + rupiah(hitungTotal()),
+            "Berhasil", JOptionPane.INFORMATION_MESSAGE);
+
+    model.setRowCount(0);
+    updateTotal();
+    bersihkanForm();
+}
+
+private void simpanKeDatabase(String kodeTrx) throws SQLException {
+    String sqlHeader = "INSERT INTO restock (kode_restock, tanggal, total) VALUES (?, NOW(), ?)";
+    String sqlDetail = "INSERT INTO detail_restock (kode_restock, kode_produk, supplier, jumlah, harga_beli, subtotal) "
+                     + "VALUES (?, ?, ?, ?, ?, ?)";
+    String sqlStok = "UPDATE produk SET stok = stok + ? WHERE kode_produk = ?";
+
+    try (Connection conn = Koneksi.getConnection()) {
+        conn.setAutoCommit(false);
+        try (PreparedStatement ph = conn.prepareStatement(sqlHeader);
+             PreparedStatement pd = conn.prepareStatement(sqlDetail);
+             PreparedStatement ps = conn.prepareStatement(sqlStok)) {
+
+            ph.setString(1, kodeTrx);
+            ph.setLong(2, hitungTotal());
+            ph.executeUpdate();
+
+            for (int i = 0; i < model.getRowCount(); i++) {
+                String kode = (String) model.getValueAt(i, 0);
+                String supplier = (String) model.getValueAt(i, 2);
+                int jumlah = (Integer) model.getValueAt(i, 3);
+                long harga = (Long) model.getValueAt(i, 4);
+                long subtotal = (Long) model.getValueAt(i, 5);
+
+                pd.setString(1, kodeTrx);
+                pd.setString(2, kode);
+                pd.setString(3, supplier);
+                pd.setInt(4, jumlah);
+                pd.setLong(5, harga);
+                pd.setLong(6, subtotal);
+                pd.addBatch();
+
+                ps.setInt(1, jumlah);
+                ps.setString(2, kode);
+                ps.addBatch();
+            }
+            pd.executeBatch();
+            ps.executeBatch();
+            conn.commit();
+        } catch (SQLException ex) {
+            conn.rollback();
+            throw ex;
+        }
+    }
+}
 
 private void siapkanTabel() {
     model = new DefaultTableModel(
@@ -417,33 +499,6 @@ private void hapusItem() {
     }
     model.removeRow(baris);
     updateTotal();
-}
-
-private void simpanRestock() {
-    if (model.getRowCount() == 0) {
-        JOptionPane.showMessageDialog(this, "Daftar restock masih kosong.",
-                "Peringatan", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    int konfirmasi = JOptionPane.showConfirmDialog(this,
-            "Simpan restock ini dan tambahkan stok produk?",
-            "Konfirmasi", JOptionPane.YES_NO_OPTION);
-    if (konfirmasi != JOptionPane.YES_OPTION) {
-        return;
-    }
-
-    String kodeTrx = "RST-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-
-    // TODO: simpan ke database (header restock, detail, dan update stok)
-
-    JOptionPane.showMessageDialog(this,
-            "Restock berhasil disimpan.\nKode: " + kodeTrx + "\nTotal: " + rupiah(hitungTotal()),
-            "Berhasil", JOptionPane.INFORMATION_MESSAGE);
-
-    model.setRowCount(0);
-    updateTotal();
-    bersihkanForm();
 }
 
 private void bersihkanForm() {

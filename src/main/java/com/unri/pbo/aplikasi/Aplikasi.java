@@ -4,13 +4,17 @@
 
 package com.unri.pbo.aplikasi;
 
+import com.unri.pbo.aplikasi.view.Dashboard;
+
 /**
  *
  * @author M S I
  */
 public class Aplikasi {
-
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        java.awt.EventQueue.invokeLater(() -> {
+            new Dashboard().setVisible(true);
+        });
     }
 }
+    
