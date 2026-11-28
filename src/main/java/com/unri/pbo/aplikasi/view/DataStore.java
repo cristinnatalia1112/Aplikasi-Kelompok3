@@ -15,6 +15,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JOptionPane;
+import java.util.List;
+import java.util.ArrayList;
+import com.unri.pbo.Penjualan;
+import com.unri.pbo.Pelanggan;
 /**
  *
  * @author M S I
@@ -127,19 +131,62 @@ public class DataStore {
         return 0;
     }
 
-    public static int getPenjualanHariIni() {
-        String sql = "SELECT COUNT(*) FROM penjualan WHERE DATE(tanggal) = CURDATE()";
-        try (Connection conn = Koneksi.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                return rs.getInt(1);
+public static BigDecimal getTotalPenjualanHariIni() {
+    List<Penjualan> daftarPenjualanHariIni = new ArrayList<>();
+    
+    // Pelanggan dummy untuk memenuhi syarat konstruktor Penjualan(id, Pelanggan)
+    Pelanggan pelangganUmum = new Pelanggan("C001", "Umum", "-", "-", "Umum");
+
+    String sqlPenjualan = "SELECT kode_penjualan FROM penjualan WHERE DATE(tanggal) = CURDATE()";
+    String sqlDetail = "SELECT d.kode_produk, pr.nama_produk, pr.harga_beli, d.harga_jual, d.jumlah " +
+                       "FROM detail_penjualan d " +
+                       "JOIN produk pr ON d.kode_produk = pr.kode_produk " +
+                       "WHERE d.kode_penjualan = ?";
+
+    try (Connection conn = Koneksi.getConnection();
+         PreparedStatement psPenjualan = conn.prepareStatement(sqlPenjualan);
+         ResultSet rsPenjualan = psPenjualan.executeQuery()) {
+
+        while (rsPenjualan.next()) {
+            String kodePenjualan = rsPenjualan.getString("kode_penjualan");
+            
+            // 1. Buat objek Penjualan menggunakan konstruktor asli dosen
+            Penjualan p = new Penjualan(kodePenjualan, pelangganUmum);
+
+            // 2. Muat item detail transaksi agar hitungTotal() dosen bisa menghitungnya
+            try (PreparedStatement psDetail = conn.prepareStatement(sqlDetail)) {
+                psDetail.setString(1, kodePenjualan);
+                try (ResultSet rsDetail = psDetail.executeQuery()) {
+                    while (rsDetail.next()) {
+                        // Buat objek Produk sementara dengan stok aman (999999) agar tambahPenjualan tidak melempar error stok
+                        Produk prodTemp = new Produk(
+                            rsDetail.getString("kode_produk"),
+                            rsDetail.getString("nama_produk"),
+                            BigDecimal.valueOf(rsDetail.getLong("harga_beli")),
+                            BigDecimal.valueOf(rsDetail.getLong("harga_jual")),
+                            999999
+                        );
+                        int jumlah = rsDetail.getInt("jumlah");
+                        
+                        // Panggil method asli dosen untuk mengisi detail penjualan
+                        p.tambahPenjualan(prodTemp, jumlah, "SYSTEM", "Load DB");
+                    }
+                }
             }
-        } catch (SQLException e) {
-            System.out.println("Error getPenjualanHariIni: " + e.getMessage());
+            daftarPenjualanHariIni.add(p);
         }
-        return 0;
+    } catch (SQLException e) {
+        System.out.println("Error getTotalPenjualanHariIni: " + e.getMessage());
     }
+
+    // 3. Jumlahkan total menggunakan method hitungTotal() asli dari class Penjualan dosen
+    BigDecimal totalHariIni = BigDecimal.ZERO;
+    for (Penjualan p : daftarPenjualanHariIni) {
+        totalHariIni = totalHariIni.add(p.hitungTotal());
+    }
+
+    return totalHariIni;
+}
 
     public static int getStokMenipis(int batasMinimum) {
         String sql = "SELECT COUNT(*) FROM produk WHERE stok <= ?";

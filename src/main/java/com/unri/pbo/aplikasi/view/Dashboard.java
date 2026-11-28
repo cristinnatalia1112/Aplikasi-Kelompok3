@@ -24,7 +24,7 @@ public class Dashboard extends javax.swing.JFrame {
     }
         private void loadDashboard() {
         jLabel7.setText(String.valueOf(DataStore.getTotalProduk()));
-        jLabel8.setText(String.valueOf(DataStore.getPenjualanHariIni()));
+        jLabel8.setText(String.valueOf(DataStore.getTotalPenjualanHariIni()));
         jLabel9.setText(DataStore.getStokMenipis(5) + " ITEM");
     }
     /**

@@ -206,6 +206,7 @@ private String generateIdSupplierFromDB() {
         btnCari = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblSupplier = new javax.swing.JTable();
+        btnSupplier = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("POS TOKO BERKAT - Manajemen Supplier");
@@ -294,7 +295,7 @@ private String generateIdSupplierFromDB() {
         lblSub.setForeground(new java.awt.Color(102, 102, 102));
         lblSub.setText("Kelola data supplier Toko Berkat");
         jPanel2.add(lblSub);
-        lblSub.setBounds(24, 55, 166, 16);
+        lblSub.setBounds(24, 55, 171, 16);
 
         pnlFormSupplier.setBackground(new java.awt.Color(255, 255, 255));
         pnlFormSupplier.setLayout(null);
@@ -406,6 +407,15 @@ private String generateIdSupplierFromDB() {
 
         jPanel2.add(jScrollPane1);
         jScrollPane1.setBounds(24, 272, 645, 290);
+
+        btnSupplier.setText("Pelanggan");
+        btnSupplier.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSupplierActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btnSupplier);
+        btnSupplier.setBounds(480, 236, 95, 28);
 
         jPanel1.add(jPanel2);
         jPanel2.setBounds(280, 0, 720, 578);
@@ -557,6 +567,14 @@ private String generateIdSupplierFromDB() {
         new transaksiPembelian().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void btnSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSupplierActionPerformed
+        manajemenPelanggan formSupplier = new manajemenPelanggan();
+        formSupplier.pack();
+        formSupplier.setLocationRelativeTo(null);
+        formSupplier.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnSupplierActionPerformed
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
         dispose();
         new manajemenPelanggan_Supplier().setVisible(true);
@@ -590,6 +608,7 @@ private String generateIdSupplierFromDB() {
     private javax.swing.JButton btnCari;
     private javax.swing.JButton btnHapus;
     private javax.swing.JButton btnReset;
+    private javax.swing.JButton btnSupplier;
     private javax.swing.JButton btnTambah;
     private javax.swing.JButton btnUbah;
     private javax.swing.JButton jButton1;
