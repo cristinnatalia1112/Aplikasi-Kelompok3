@@ -17,11 +17,16 @@ public class Dashboard extends javax.swing.JFrame {
      */
     public Dashboard() {
         initComponents();
+        loadDashboard();
         setPreferredSize(new java.awt.Dimension(1050, 620));
         pack();
         setLocationRelativeTo(null);
     }
-
+        private void loadDashboard() {
+        jLabel7.setText(String.valueOf(DataStore.getTotalProduk()));
+        jLabel8.setText(String.valueOf(DataStore.getPenjualanHariIni()));
+        jLabel9.setText(DataStore.getStokMenipis(5) + " ITEM");
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

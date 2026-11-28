@@ -55,7 +55,7 @@ private void loadPelangganFromDB() {
     } catch (SQLException ex) {
         JOptionPane.showMessageDialog(this, "Gagal memuat pelanggan: " + ex.getMessage());
     }
-
+  
     if (daftarPelanggan.isEmpty()) {
         daftarPelanggan.add(new Pelanggan("C001", "Umum", "-", "-", "Umum"));
     }
@@ -169,6 +169,9 @@ private void simpanTransaksiKeDB(String kodePenjualan) throws SQLException {
         }
     }
 }
+
+
+    
 private String generateIdPenjualanFromDB() {
     String sql = "SELECT kode_penjualan FROM penjualan ORDER BY kode_penjualan DESC LIMIT 1";
     try (Connection conn = Koneksi.getConnection();
