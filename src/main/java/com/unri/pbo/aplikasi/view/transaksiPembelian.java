@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
@@ -378,12 +379,33 @@ public class transaksiPembelian extends javax.swing.JFrame {
     private DefaultTableModel model;
 
 private void siapkanCombo() {
-    cbProduk.setModel(new DefaultComboBoxModel<>(new String[]{
-        "P001 - Indomie Goreng", "P002 - Teh Botol Sosro", "P003 - Beras 5kg",
-        "P004 - Pulpen Snowman", "P005 - Paracetamol"}));
-    cbSupplier.setModel(new DefaultComboBoxModel<>(new String[]{
-        "PT Indofood", "CV Sumber Makmur", "UD Sejahtera"}));
+    DefaultComboBoxModel<String> modelProduk = new DefaultComboBoxModel<>();
+    DefaultComboBoxModel<String> modelSupplier = new DefaultComboBoxModel<>();
+
+    try (Connection conn = Koneksi.getConnection()) {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT kode_produk, nama_produk FROM produk ORDER BY kode_produk");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                modelProduk.addElement(rs.getString("kode_produk") + " - " + rs.getString("nama_produk"));
+            }
+        }
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT nama_perusahaan FROM supplier ORDER BY nama_perusahaan");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                modelSupplier.addElement(rs.getString("nama_perusahaan"));
+            }
+        }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Gagal memuat data: " + ex.getMessage(),
+                "Error Database", JOptionPane.ERROR_MESSAGE);
+    }
+
+    cbProduk.setModel(modelProduk);
+    cbSupplier.setModel(modelSupplier);
 }
+
 private void simpanRestock() {
     if (model.getRowCount() == 0) {
         JOptionPane.showMessageDialog(this, "Daftar restock masih kosong.",

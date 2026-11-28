@@ -55,7 +55,7 @@ private void loadPelangganFromDB() {
     } catch (SQLException ex) {
         JOptionPane.showMessageDialog(this, "Gagal memuat pelanggan: " + ex.getMessage());
     }
-
+  
     if (daftarPelanggan.isEmpty()) {
         daftarPelanggan.add(new Pelanggan("C001", "Umum", "-", "-", "Umum"));
     }
@@ -83,7 +83,6 @@ private void loadProdukFromDB() {
 }
 private void simpanTransaksiKeDB(String kodePenjualan) throws SQLException {
     String sqlCariPelanggan = "SELECT kode_pelanggan FROM pelanggan WHERE nama = ? LIMIT 1";
-    String sqlCariProduk = "SELECT kode_produk FROM produk WHERE nama_produk = ? LIMIT 1";
     String sqlPenjualan = "INSERT INTO penjualan (kode_penjualan, tanggal, kode_pelanggan, total) VALUES (?, NOW(), ?, ?)";
     String sqlDetail = "INSERT INTO detail_penjualan (kode_penjualan, kode_produk, jumlah, harga_jual, subtotal) VALUES (?, ?, ?, ?, ?)";
     String sqlStok = "UPDATE produk SET stok = stok - ? WHERE kode_produk = ? AND stok >= ?";
@@ -123,16 +122,7 @@ private void simpanTransaksiKeDB(String kodePenjualan) throws SQLException {
             long hargaJual = d.getHargaJual().longValue();
             long subtotal = d.getSubtotal().longValue();
 
-            String kodeProduk;
-            try (PreparedStatement psPrd = conn.prepareStatement(sqlCariProduk)) {
-                psPrd.setString(1, namaProduk);
-                try (ResultSet rsPrd = psPrd.executeQuery()) {
-                    if (!rsPrd.next()) {
-                        throw new SQLException("Produk tidak ditemukan di SQL: " + namaProduk);
-                    }
-                    kodeProduk = rsPrd.getString("kode_produk");
-                }
-            }
+            String kodeProduk = d.getProduk().getIdProduk();
 
             try (PreparedStatement psDet = conn.prepareStatement(sqlDetail)) {
                 psDet.setString(1, kodePenjualan);
@@ -179,6 +169,9 @@ private void simpanTransaksiKeDB(String kodePenjualan) throws SQLException {
         }
     }
 }
+
+
+    
 private String generateIdPenjualanFromDB() {
     String sql = "SELECT kode_penjualan FROM penjualan ORDER BY kode_penjualan DESC LIMIT 1";
     try (Connection conn = Koneksi.getConnection();

@@ -386,7 +386,7 @@ public void tambahData(String tanggal, String kodeTrx, String jenis, String kete
 private void muatData() {
     model.setRowCount(0);
     String sql = "SELECT DATE_FORMAT(tanggal, '%d/%m/%Y') AS tgl, kode, jenis, keterangan, total FROM ("
-               + "  SELECT tanggal, kode, jenis, keterangan, total FROM transaksi"
+               + "  SELECT tanggal, kode, jenis, keterangan, total FROM transaksi WHERE jenis = 'Penjualan'"
                + "  UNION ALL"
                + "  SELECT r.tanggal, r.kode_restock, 'Pembelian',"
                + "         GROUP_CONCAT(CONCAT('Restock ', p.nama_produk, ' x', d.jumlah) SEPARATOR ', '),"
