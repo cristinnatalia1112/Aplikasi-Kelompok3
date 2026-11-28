@@ -97,18 +97,38 @@ public class riwayat extends javax.swing.JFrame {
         jButton1.setBounds(20, 90, 240, 40);
 
         jButton2.setText("Data Produk");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton2);
         jButton2.setBounds(20, 160, 240, 40);
 
         jButton3.setText("Pelanggan & Supplier");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton3);
         jButton3.setBounds(20, 230, 240, 40);
 
         jButton4.setText("Kasir");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton4);
         jButton4.setBounds(20, 300, 240, 40);
 
         jButton5.setText("Restock");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton5);
         jButton5.setBounds(20, 370, 240, 40);
 
@@ -248,7 +268,8 @@ public class riwayat extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        new Dashboard().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
@@ -262,6 +283,26 @@ public class riwayat extends javax.swing.JFrame {
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnResetActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        new DataProduk().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+       new manajemenPelanggan_Supplier().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        new transaksiPenjualan().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        new transaksiPembelian().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton5ActionPerformed
 private DefaultTableModel model;
 private TableRowSorter<DefaultTableModel> sorter;
 
@@ -345,7 +386,7 @@ public void tambahData(String tanggal, String kodeTrx, String jenis, String kete
 private void muatData() {
     model.setRowCount(0);
     String sql = "SELECT DATE_FORMAT(tanggal, '%d/%m/%Y') AS tgl, kode, jenis, keterangan, total FROM ("
-               + "  SELECT tanggal, kode, jenis, keterangan, total FROM transaksi"
+               + "  SELECT tanggal, kode, jenis, keterangan, total FROM transaksi WHERE jenis = 'Penjualan'"
                + "  UNION ALL"
                + "  SELECT r.tanggal, r.kode_restock, 'Pembelian',"
                + "         GROUP_CONCAT(CONCAT('Restock ', p.nama_produk, ' x', d.jumlah) SEPARATOR ', '),"

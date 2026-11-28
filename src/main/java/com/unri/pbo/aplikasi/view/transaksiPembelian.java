@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
@@ -99,14 +100,29 @@ public class transaksiPembelian extends javax.swing.JFrame {
         jButton1.setBounds(20, 90, 240, 40);
 
         jButton2.setText("Data Produk");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton2);
         jButton2.setBounds(20, 160, 240, 40);
 
         jButton3.setText("Pelanggan & Supplier");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton3);
         jButton3.setBounds(20, 230, 240, 40);
 
         jButton4.setText("Kasir");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton4);
         jButton4.setBounds(20, 300, 240, 40);
 
@@ -336,22 +352,60 @@ public class transaksiPembelian extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        new Dashboard().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        new riwayat().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        new DataProduk().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        new manajemenPelanggan_Supplier().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        new transaksiPenjualan().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     private DefaultTableModel model;
 
 private void siapkanCombo() {
-    cbProduk.setModel(new DefaultComboBoxModel<>(new String[]{
-        "P001 - Indomie Goreng", "P002 - Teh Botol Sosro", "P003 - Beras 5kg",
-        "P004 - Pulpen Snowman", "P005 - Paracetamol"}));
-    cbSupplier.setModel(new DefaultComboBoxModel<>(new String[]{
-        "PT Indofood", "CV Sumber Makmur", "UD Sejahtera"}));
+    DefaultComboBoxModel<String> modelProduk = new DefaultComboBoxModel<>();
+    DefaultComboBoxModel<String> modelSupplier = new DefaultComboBoxModel<>();
+
+    try (Connection conn = Koneksi.getConnection()) {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT kode_produk, nama_produk FROM produk ORDER BY kode_produk");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                modelProduk.addElement(rs.getString("kode_produk") + " - " + rs.getString("nama_produk"));
+            }
+        }
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT nama_perusahaan FROM supplier ORDER BY nama_perusahaan");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                modelSupplier.addElement(rs.getString("nama_perusahaan"));
+            }
+        }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Gagal memuat data: " + ex.getMessage(),
+                "Error Database", JOptionPane.ERROR_MESSAGE);
+    }
+
+    cbProduk.setModel(modelProduk);
+    cbSupplier.setModel(modelSupplier);
 }
+
 private void simpanRestock() {
     if (model.getRowCount() == 0) {
         JOptionPane.showMessageDialog(this, "Daftar restock masih kosong.",
